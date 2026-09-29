@@ -24,6 +24,7 @@ import {
   Settings2,
 } from "lucide-react";
 import "./style.css";
+import "./matrix.css";
 import {
   QuickSet,
   QuickField,
@@ -131,6 +132,12 @@ function FieldSelect({ label, value, onChange, values }) {
 }
 function App() {
   const [team, setTeam] = useState(() => stored("meta-lens-team", example)),
+    [teamSource, setTeamSource] = useState(() =>
+      stored(
+        "meta-lens-team-source",
+        stored("meta-lens-team", null) ? "Saved team" : "Example core",
+      ),
+    ),
     [data, setData] = useState(null),
     [status, setStatus] = useState({ running: true, progress: "Connecting" }),
     [cat, setCat] = useState(null),
@@ -150,6 +157,9 @@ function App() {
     [member, setMember] = useState(0),
     [modal, setModal] = useState(null),
     [conditions, setConditions] = useState(false),
+    [quickControls, setQuickControls] = useState(false),
+    [limit, setLimit] = useState(20),
+    [gapsOnly, setGapsOnly] = useState(false),
     [sort, setSort] = useState("usage");
   useEffect(() => {
     let alive = true;
@@ -180,14 +190,15 @@ function App() {
   }, []);
   useEffect(() => {
     localStorage.setItem("meta-lens-team", JSON.stringify(team));
-  }, [team]);
+    localStorage.setItem("meta-lens-team-source", JSON.stringify(teamSource));
+  }, [team, teamSource]);
   useEffect(() => {
     if (!data) return;
     const c = new AbortController();
     setBusy(true);
     const timer = setTimeout(
       () =>
-        api("analyze", { team, options }, c.signal)
+        api("analyze", { team, options, view: { limit, query } }, c.signal)
           .then((r) => {
             setRows(r);
             setError("");
@@ -207,22 +218,42 @@ function App() {
       clearTimeout(timer);
       c.abort();
     };
-  }, [team, data, options]);
+  }, [team, data, options, limit, query]);
   const visible = useMemo(
     () =>
       rows
-        .filter((r) => r.species.toLowerCase().includes(query.toLowerCase()))
+        .filter((r) =>
+          r.species.toLowerCase().includes(query.trim().toLowerCase()),
+        )
+        .filter(
+          (r) =>
+            !gapsOnly ||
+            !r.cells.some(
+              (c) => (mode === "outgoing" ? c.ko : c.survive) >= 0.95,
+            ),
+        )
         .sort((a, b) =>
           sort === "risk"
-            ? Math.min(...a.cells.map((c) => c.survive ?? 1)) -
-              Math.min(...b.cells.map((c) => c.survive ?? 1))
+            ? Math.max(...a.cells.map((c) => c.survive ?? 0)) -
+              Math.max(...b.cells.map((c) => c.survive ?? 0))
             : (b.usage || 0) - (a.usage || 0) ||
               (a.rank || 999) - (b.rank || 999),
         ),
-    [rows, query, sort],
+    [rows, query, sort, gapsOnly, mode],
   );
-  const changeTeam = (t) => {
+  const extraConditions = [
+    options.singleTarget,
+    options.critical,
+    ...["team", "opponent"].flatMap((side) =>
+      ["reflect", "lightScreen", "helpingHand", "friendGuard", "protect"].map(
+        (key) => options[side]?.[key],
+      ),
+    ),
+  ].filter(Boolean).length;
+  const changeTeam = (t, source = "Imported team") => {
     setTeam(t);
+    setTeamSource(source);
+    setRows([]);
     setMember(0);
     setSelected(null);
     setModal(null);
@@ -283,7 +314,7 @@ function App() {
         <div className="workspace-label">WORKSPACE</div>
         <nav>
           {[
-            ["matchups", Layers3, "Matchup overview"],
+            ["matchups", Layers3, "Matchup matrix"],
             ["teams", BookOpen, "Published teams"],
             ["sources", Database, "Data & sources"],
           ].map(([id, Icon, label]) => (
@@ -317,7 +348,7 @@ function App() {
             Workspace <ChevronRight size={14} />{" "}
             <strong>
               {tab === "matchups"
-                ? "Matchup overview"
+                ? "Matchup matrix"
                 : tab === "teams"
                   ? "Published teams"
                   : "Data & sources"}
@@ -327,7 +358,7 @@ function App() {
             POKÉMON CHAMPIONS <span>{data?.format || "M-C"}</span>
           </span>
         </header>
-        <div className="page">
+        <div className={"page " + (tab === "matchups" ? "matrix-page" : "")}>
           <div className="page-heading">
             <div>
               <div className="eyebrow">
@@ -335,14 +366,14 @@ function App() {
               </div>
               <h1>
                 {tab === "matchups"
-                  ? "See the matchup."
+                  ? "Your team × the meta."
                   : tab === "teams"
                     ? "Learn from the field."
                     : "Trace every number."}
               </h1>
               <p>
                 {tab === "matchups"
-                  ? "Explore what you KO, what you survive, and where a few stat points change the answer."
+                  ? "Read the ranges. Find the gaps. Open any cell for the exact matchup."
                   : tab === "teams"
                     ? "Tournament teams and creator builds from the VGCPastes repository."
                     : "Tournament representation, in-game distributions, and published sets — with their sources attached."}
@@ -390,7 +421,9 @@ function App() {
                   <div>
                     <span className="step">01</span>
                     <h2>Your team</h2>
-                    <span className="muted">{team.length} / 6 Pokémon</span>
+                    <span className="muted">
+                      {team.length} / 6 Pokémon · {teamSource}
+                    </span>
                   </div>
                   <div className="actions">
                     <button
@@ -402,7 +435,9 @@ function App() {
                     </button>
                     <button
                       className="text-button"
-                      onClick={() => changeTeam(structuredClone(example))}
+                      onClick={() =>
+                        changeTeam(structuredClone(example), "Example core")
+                      }
                     >
                       Load example
                     </button>
@@ -416,115 +451,105 @@ function App() {
                     </button>
                   </div>
                 </div>
-                <div className="team-grid">
+                <div className="team-strip">
                   {team.map((p, i) => (
-                    <button
-                      key={i}
+                    <div
                       className={
-                        "team-card " + (member === i ? "selected" : "")
+                        "team-chip " + (member === i ? "selected" : "")
                       }
-                      onClick={() => setMember(i)}
-                      onDoubleClick={() => setModal({ type: "edit", index: i })}
+                      key={i}
                     >
-                      <div className="team-card-top">
-                        <Avatar name={p.species} index={i} />
-                        <span className="slot">0{i + 1}</span>
-                      </div>
-                      <strong>{p.species}</strong>
-                      <span>{p.item || "No held item"}</span>
-                      <div className="team-card-bottom">
-                        <small>{p.nature}</small>
-                        <span
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setModal({ type: "edit", index: i });
-                          }}
-                          role="button"
-                          tabIndex={0}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                              e.stopPropagation();
-                              setModal({ type: "edit", index: i });
-                            }
-                          }}
-                          aria-label={`Edit ${p.species}`}
-                        >
-                          <Settings2 size={14} />
+                      <button
+                        className="team-chip-select"
+                        onClick={() => setMember(i)}
+                        aria-pressed={member === i}
+                      >
+                        <Avatar small name={p.species} index={i} />
+                        <span>
+                          <strong>{p.species}</strong>
+                          <small>{p.item || "No held item"}</small>
                         </span>
-                      </div>
-                    </button>
+                      </button>
+                      <button
+                        className="team-chip-edit"
+                        onClick={() => setModal({ type: "edit", index: i })}
+                        aria-label={`Edit ${p.species}`}
+                        title={`Edit ${p.species}`}
+                      >
+                        <Settings2 size={14} />
+                      </button>
+                    </div>
                   ))}
                   {team.length < 6 && (
                     <button
-                      className="add-card"
+                      className="add-chip"
                       onClick={() => setModal({ type: "import" })}
                     >
-                      <Plus size={23} />
-                      <span>Add your Pokémon</span>
-                      <small>Paste a team or a single set</small>
+                      <Plus size={16} /> Add
                     </button>
                   )}
                 </div>
-                <div className="tiny-note">
-                  Example team loaded on first visit. Select a member to focus
-                  the table; use its settings to edit. Your team saves on this
-                  device.
-                </div>
               </section>
-              <div className="metrics">
-                <Metric
-                  value={data?.threats.length || "—"}
-                  label="META POKÉMON"
-                  sub={
-                    data
-                      ? `of ${data.availableCount} available`
-                      : "Waiting for sources"
-                  }
-                />
-                <Metric
-                  value={data?.teamCount?.toLocaleString() || "—"}
-                  label="TOURNAMENT TEAMS"
-                  sub={`${data?.selectedEvents.length || 0} selected official events`}
-                />
-                <Metric
-                  value={data?.publishedLoaded || "—"}
-                  label="PUBLISHED SPREAD TEAMS"
-                  sub="Observed combinations, linked to pastes"
-                />
-                <Metric
-                  value={
-                    data
-                      ? new Date(data.updatedAt).toLocaleDateString(undefined, {
-                          month: "short",
-                          day: "numeric",
-                        })
-                      : "—"
-                  }
-                  label="LAST REFRESH"
-                  sub={
-                    data?.health.find((h) => h.name.includes("Munch"))?.stale
-                      ? "Cached source — refresh failed"
-                      : "Source capture times in Data & sources"
-                  }
-                />
+              <div className="source-strip">
+                <span>
+                  <strong>{data?.threats.length || "—"}</strong> meta Pokémon
+                </span>
+                <span>
+                  <strong>{data?.teamCount?.toLocaleString() || "—"}</strong>{" "}
+                  tournament teams
+                </span>
+                <span>
+                  <strong>{data?.publishedLoaded || "—"}</strong> published
+                  teams
+                </span>
+                <button onClick={() => setTab("sources")}>
+                  Sources ·{" "}
+                  {data
+                    ? new Date(data.updatedAt).toLocaleDateString(undefined, {
+                        month: "short",
+                        day: "numeric",
+                      })
+                    : "Loading"}{" "}
+                  <ArrowUpRight size={12} />
+                </button>
               </div>
-              <section className="analysis-section">
+              <section
+                className="analysis-section"
+                id="matchup-matrix"
+                aria-label="Team versus metagame matrix"
+              >
                 <div className="section-title">
                   <div>
                     <span className="step">02</span>
-                    <h2>Team × metagame</h2>
+                    <h2>Matchup matrix</h2>
                     {busy && <span className="calculating">Calculating…</span>}
                   </div>
-                  <button
-                    className={
-                      "text-button " + (conditions ? "active-text" : "")
-                    }
-                    onClick={() => setConditions(!conditions)}
-                  >
-                    <SlidersHorizontal size={16} />
-                    Battle conditions
-                    <ChevronDown size={14} />
-                  </button>
+                  <div className="actions">
+                    <button
+                      className={
+                        "text-button " + (quickControls ? "active-text" : "")
+                      }
+                      onClick={() => setQuickControls(!quickControls)}
+                      aria-expanded={quickControls}
+                    >
+                      <Settings2 size={16} /> Stats & field{" "}
+                      <ChevronDown size={14} />
+                    </button>
+                    <button
+                      aria-expanded={conditions}
+                      className={
+                        "text-button " + (conditions ? "active-text" : "")
+                      }
+                      onClick={() => setConditions(!conditions)}
+                    >
+                      <SlidersHorizontal size={16} />
+                      More conditions
+                      {extraConditions > 0 && (
+                        <span className="tag">{extraConditions} active</span>
+                      )}
+                      <ChevronDown size={14} />
+                    </button>
+                  </div>
                 </div>
                 {conditions && (
                   <div className="conditions">
@@ -614,14 +639,51 @@ function App() {
                     </div>
                   </div>
                 )}
-                <QuickSet
-                  value={team[member] || team[0]}
-                  onChange={(p) =>
-                    setTeam(team.map((x, i) => (i === member ? p : x)))
-                  }
-                  title="Selected teammate · quick battle controls"
-                />
-                <QuickField options={options} onChange={setOptions} />
+                {quickControls && (
+                  <div className="matrix-quick-controls">
+                    <QuickSet
+                      value={team[member] || team[0]}
+                      onChange={(p) =>
+                        setTeam(team.map((x, i) => (i === member ? p : x)))
+                      }
+                      title="Selected teammate · quick battle controls"
+                    />
+                    <QuickField options={options} onChange={setOptions} />
+                  </div>
+                )}
+                <div className="matrix-summary" aria-live="polite">
+                  <span>
+                    <Target size={15} />
+                    <strong>
+                      {busy
+                        ? "…"
+                        : rows.filter((r) => r.cells.some((c) => c.ko >= 0.95))
+                            .length}{" "}
+                      / {rows.length}
+                    </strong>{" "}
+                    threats with a ≥95% OHKO option
+                  </span>
+                  <span>
+                    <Shield size={15} />
+                    <strong>
+                      {busy
+                        ? "…"
+                        : rows.filter((r) =>
+                            r.cells.some((c) => c.survive >= 0.95),
+                          ).length}{" "}
+                      / {rows.length}
+                    </strong>{" "}
+                    with a ≥95% survival option
+                  </span>
+                  <button
+                    className={gapsOnly ? "gap-toggle active" : "gap-toggle"}
+                    aria-pressed={gapsOnly}
+                    onClick={() => setGapsOnly(!gapsOnly)}
+                  >
+                    {" "}
+                    {gapsOnly ? "Show all rows" : "Show coverage gaps"}
+                  </button>
+                </div>
                 <div className="table-toolbar">
                   <div className="segmented">
                     <button
@@ -643,30 +705,76 @@ function App() {
                     <label className="search">
                       <Search size={15} />
                       <input
-                        placeholder="Find a threat…"
+                        placeholder="Search all meta…"
+                        aria-label="Search all meta"
+                        maxLength={100}
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                       />
                     </label>
+                    <select
+                      aria-label="Matrix scope"
+                      value={limit}
+                      onChange={(e) => {
+                        setLimit(Number(e.target.value));
+                        setSelected(null);
+                      }}
+                    >
+                      <option value={20}>Top 20</option>
+                      <option value={40}>Top 40</option>
+                      <option value={80}>Top 80</option>
+                      <option value={0}>
+                        All {data?.threats.length || "meta"}
+                      </option>
+                    </select>
                     <select
                       aria-label="Sort threats"
                       value={sort}
                       onChange={(e) => setSort(e.target.value)}
                     >
                       <option value="usage">Tournament usage</option>
-                      <option value="risk">Survival risk</option>
+                      <option value="risk">Team survival gaps</option>
                     </select>
                   </div>
                 </div>
                 <div className="table-explainer">
                   <Info size={14} />
                   {mode === "outgoing"
-                    ? "Each cell: best available move’s conditional OHKO chance across the modeled spreads."
-                    : "Each cell: chance to survive the opponent’s most dangerous modeled move."}{" "}
+                    ? "Damage % + OHKO chance. Color = KO reliability. Ranges span the modeled spreads."
+                    : "Damage % received + survival chance. Color = survival reliability across modeled spreads."}{" "}
                   <strong>Click any cell to inspect.</strong>
                 </div>
-                <div className={"matrix-wrap " + (busy ? "is-busy" : "")}>
-                  <table className="matrix">
+                <div className="matrix-context">
+                  <span>
+                    {query.trim()
+                      ? "Search across all loaded threats"
+                      : limit
+                        ? `Top ${limit} by event usage`
+                        : "Entire loaded metagame"}{" "}
+                    · {visible.length} rows
+                    {gapsOnly
+                      ? ` · no ≥95% ${mode === "outgoing" ? "OHKO" : "survival"} option`
+                      : ""}
+                  </span>
+                  <span>
+                    Weather: {options.weather || "None"} · Terrain:{" "}
+                    {options.terrain || "None"}
+                    {options.trickRoom ? " · Trick Room ON" : ""}
+                    {options.autoIntimidate === false
+                      ? " · Intimidate OFF"
+                      : ""}
+                    {options.team?.tailwind ? " · Your Tailwind ON" : ""}
+                    {options.opponent?.tailwind ? " · Foe Tailwind ON" : ""}
+                  </span>
+                </div>
+                <div
+                  className={"matrix-wrap " + (busy ? "is-busy" : "")}
+                  aria-busy={busy}
+                >
+                  <table
+                    className="matrix"
+                    style={{ minWidth: Math.max(820, 225 + team.length * 158) }}
+                  >
                     <thead>
                       <tr>
                         <th className="threat-heading">
@@ -722,6 +830,8 @@ function App() {
                             {r.cells.map((c, i) => {
                               const chance =
                                 mode === "outgoing" ? c.ko : c.survive;
+                              const damage =
+                                mode === "outgoing" ? c.out : c.incoming;
                               return (
                                 <td
                                   key={i}
@@ -738,25 +848,27 @@ function App() {
                                             ? "mixed"
                                             : "bad")
                                     }
+                                    aria-label={`${team[i]?.species || "Updating teammate"} vs ${r.species}: ${damage ? `${num(damage.minPercent)} to ${num(damage.maxPercent)} percent damage` : "no damaging move"}, ${pct(chance)} ${mode === "outgoing" ? "OHKO" : "survival"}. Open matchup.`}
+                                    aria-expanded={
+                                      selected === r.species && member === i
+                                    }
                                     onClick={() => {
                                       setSelected(r.species);
                                       setMember(i);
                                     }}
                                   >
-                                    <strong>
-                                      {pct(chance)}
-                                      <span>
-                                        {mode === "outgoing"
-                                          ? "OHKO"
-                                          : "survive"}
-                                      </span>
+                                    <strong className="cell-damage">
+                                      {damage
+                                        ? `${num(damage.minPercent)}–${num(damage.maxPercent)}%`
+                                        : "—"}
                                     </strong>
                                     <small>
-                                      {mode === "outgoing"
-                                        ? c.out?.move
-                                        : c.incoming?.move ||
-                                          "No damaging move"}
+                                      {damage?.move || "No damaging move"}
                                     </small>
+                                    <span className="cell-probability">
+                                      {pct(chance)}{" "}
+                                      {mode === "outgoing" ? "OHKO" : "survive"}
+                                    </span>
                                     <span className="cell-meter">
                                       <i
                                         style={{
@@ -773,6 +885,12 @@ function App() {
                           {selected === r.species && (
                             <tr className="detail-row">
                               <td colSpan={team.length + 1}>
+                                <button
+                                  className="text-button close-matchup"
+                                  onClick={() => setSelected(null)}
+                                >
+                                  <X size={15} /> Close matchup · back to matrix
+                                </button>
                                 <Matchup
                                   key={`${r.species}-${member}`}
                                   team={team[member]}
@@ -799,14 +917,22 @@ function App() {
                     <div className="empty">
                       <Layers3 size={30} />
                       <h3>
-                        {data
-                          ? "No matching threats"
-                          : "Preparing your metagame"}
+                        {busy
+                          ? "Calculating your matrix"
+                          : data
+                            ? gapsOnly
+                              ? "No coverage gaps in this view"
+                              : "No matching threats"
+                            : "Preparing your metagame"}
                       </h3>
                       <p>
-                        {data
-                          ? "Try a different search, or check any import errors above."
-                          : "The first launch fetches public data. Future launches use the local cache."}
+                        {busy
+                          ? "Applying your team, modeled spreads and battle conditions…"
+                          : data
+                            ? gapsOnly
+                              ? "Every row has at least one teammate meeting the selected 95% threshold."
+                              : "Try a different search, or check any import errors above."
+                            : "The first launch fetches public data. Future launches use the local cache."}
                       </p>
                     </div>
                   )}
@@ -898,6 +1024,8 @@ function App() {
             team.length > 1
               ? () => {
                   setTeam(team.filter((_, i) => i !== modal.index));
+                  setRows([]);
+                  setSelected(null);
                   setMember(0);
                   setModal(null);
                 }
@@ -905,15 +1033,6 @@ function App() {
           }
         />
       )}
-    </div>
-  );
-}
-function Metric({ value, label, sub }) {
-  return (
-    <div className="metric">
-      <span>{label}</span>
-      <strong>{value}</strong>
-      <small>{sub}</small>
     </div>
   );
 }

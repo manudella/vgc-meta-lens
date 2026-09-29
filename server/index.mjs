@@ -5,7 +5,8 @@ import { spawn } from "node:child_process";
 import { Worker } from "node:worker_threads";
 import { catalog, calculatePair } from "./engine.mjs";
 import { parsePaste } from "./paste.mjs";
-import { analyze, sweep } from "./analysis.mjs";
+import { sweep } from "./analysis.mjs";
+import { selectThreats } from "./matrix-view.mjs";
 import { state, restore, refresh, pasteFromUrl } from "./sources.mjs";
 const app = express(),
   port = Number(process.env.PORT) || 4783;
@@ -47,12 +48,26 @@ app.post("/api/import", async (req, res) => {
   const text = req.body.url ? await pasteFromUrl(req.body.url) : req.body.text;
   res.json({ team: parsePaste(text), text });
 });
+const analysisCache = new Map();
+let cacheDataset;
 app.post("/api/analyze", async (req, res) => {
   if (!state.data) throw new Error("Wait for data refresh first.");
+  if (cacheDataset !== state.data.updatedAt) {
+    analysisCache.clear();
+    cacheDataset = state.data.updatedAt;
+  }
+  const datasetVersion = cacheDataset;
+  const threats = selectThreats(state.data.threats, req.body.view);
+  const cacheKey = JSON.stringify([
+    req.body.team,
+    req.body.options,
+    threats.map((t) => t.species),
+  ]);
+  if (analysisCache.has(cacheKey)) return res.json(analysisCache.get(cacheKey));
   const worker = new Worker(new URL("./analysis-worker.mjs", import.meta.url), {
     workerData: {
       team: req.body.team,
-      threats: state.data.threats,
+      threats,
       options: req.body.options,
     },
   });
@@ -68,7 +83,14 @@ app.post("/api/analyze", async (req, res) => {
       if (code !== 0) reject(new Error("Analysis cancelled."));
     });
   });
-  if (!res.destroyed) res.json(rows);
+  if (!res.destroyed) {
+    if (datasetVersion === state.data.updatedAt) {
+      if (analysisCache.size >= 8)
+        analysisCache.delete(analysisCache.keys().next().value);
+      analysisCache.set(cacheKey, rows);
+    }
+    res.json(rows);
+  }
 });
 app.post("/api/calculate", (req, res) =>
   res.json(calculatePair(req.body.team, req.body.opponent, req.body.options)),
