@@ -237,11 +237,30 @@
   }
 }
 @media (max-width: 800px) {
+  .shell:has(.matrix-page) .sidebar {
+    padding: 10px 14px;
+  }
+  .shell:has(.matrix-page) .sidebar .brand {
+    font-size: 13px;
+  }
+  .shell:has(.matrix-page) .sidebar .brand-mark {
+    width: 30px;
+    height: 30px;
+  }
+  .shell:has(.matrix-page) .sidebar nav {
+    margin-top: 8px;
+  }
+  .shell:has(.matrix-page) .sidebar .nav {
+    padding: 7px 3px;
+  }
+  .shell:has(.matrix-page) .topbar {
+    display: none;
+  }
   .matrix-page {
     padding-top: 16px;
   }
   .matrix-page h1 {
-    font-size: 23px;
+    font-size: 20px;
   }
   .matrix-page .eyebrow {
     display: none;
@@ -255,6 +274,32 @@
   .matrix-page .source-strip {
     gap: 8px 14px;
     margin-bottom: 14px;
+  }
+  .matrix-page .source-strip > span:nth-child(3) {
+    display: none;
+  }
+  .matrix-page .section-title {
+    gap: 5px;
+  }
+  .matrix-page .section-title .step {
+    display: none;
+  }
+  .matrix-page .section-title h2 {
+    font-size: 14px;
+  }
+  .matrix-page .section-title .actions {
+    gap: 3px;
+  }
+  .matrix-page .section-title .text-button {
+    font-size: 9px;
+    gap: 3px;
+    padding: 4px;
+  }
+  .matrix-page .analysis-section > .section-title .actions svg {
+    display: none;
+  }
+  .matrix-page .table-explainer {
+    display: none;
   }
   .source-strip button {
     margin-left: 0;
