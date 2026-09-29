@@ -1,0 +1,3818 @@
+{
+  "source": "https://github.com/smogon/pokemon-showdown",
+  "commit": "a5df8274e85b0889bf2a9b3422a08b39732374fc",
+  "moves": {
+    "Absorb": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Accelerock": {
+      "priority": 1,
+      "target": "normal"
+    },
+    "Acid": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Acid Armor": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Acid Downpour": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Acid Spray": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Acrobatics": {
+      "priority": 0,
+      "target": "any"
+    },
+    "Acupressure": {
+      "priority": 0,
+      "target": "adjacentAllyOrSelf"
+    },
+    "Aerial Ace": {
+      "priority": 0,
+      "target": "any"
+    },
+    "Aeroblast": {
+      "priority": 0,
+      "target": "any"
+    },
+    "After You": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Agility": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Air Cutter": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Air Slash": {
+      "priority": 0,
+      "target": "any"
+    },
+    "All-Out Pummeling": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Alluring Voice": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Ally Switch": {
+      "priority": 2,
+      "target": "self"
+    },
+    "Amnesia": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Anchor Shot": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Ancient Power": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Apple Acid": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Aqua Cutter": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Aqua Jet": {
+      "priority": 1,
+      "target": "normal"
+    },
+    "Aqua Ring": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Aqua Step": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Aqua Tail": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Armor Cannon": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Arm Thrust": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Aromatherapy": {
+      "priority": 0,
+      "target": "allyTeam"
+    },
+    "Aromatic Mist": {
+      "priority": 0,
+      "target": "adjacentAlly"
+    },
+    "Assist": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Assurance": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Astonish": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Astral Barrage": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Attack Order": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Attract": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Aura Sphere": {
+      "priority": 0,
+      "target": "any"
+    },
+    "Aura Wheel": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Aurora Beam": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Aurora Veil": {
+      "priority": 0,
+      "target": "allySide"
+    },
+    "Autotomize": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Avalanche": {
+      "priority": -4,
+      "target": "normal"
+    },
+    "Axe Kick": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Baby-Doll Eyes": {
+      "priority": 1,
+      "target": "normal"
+    },
+    "Baddy Bad": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Baneful Bunker": {
+      "priority": 4,
+      "target": "self"
+    },
+    "Barb Barrage": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Barrage": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Barrier": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Baton Pass": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Beak Blast": {
+      "priority": -3,
+      "target": "normal"
+    },
+    "Beat Up": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Behemoth Bash": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Behemoth Blade": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Belch": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Belly Drum": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Bestow": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Bide": {
+      "priority": 1,
+      "target": "self"
+    },
+    "Bind": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Bite": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Bitter Blade": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Bitter Malice": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Black Hole Eclipse": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Blast Burn": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Blaze Kick": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Blazing Torque": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Bleakwind Storm": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Blizzard": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Block": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Blood Moon": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Bloom Doom": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Blue Flare": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Body Press": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Body Slam": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Bolt Beak": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Bolt Strike": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Bone Club": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Bonemerang": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Bone Rush": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Boomburst": {
+      "priority": 0,
+      "target": "allAdjacent"
+    },
+    "Bounce": {
+      "priority": 0,
+      "target": "any"
+    },
+    "Bouncy Bubble": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Branch Poke": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Brave Bird": {
+      "priority": 0,
+      "target": "any"
+    },
+    "Breaking Swipe": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Breakneck Blitz": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Brick Break": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Brine": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Brutal Swing": {
+      "priority": 0,
+      "target": "allAdjacent"
+    },
+    "Bubble": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Bubble Beam": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Bug Bite": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Bug Buzz": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Bulk Up": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Bulldoze": {
+      "priority": 0,
+      "target": "allAdjacent"
+    },
+    "Bullet Punch": {
+      "priority": 1,
+      "target": "normal"
+    },
+    "Bullet Seed": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Burning Bulwark": {
+      "priority": 4,
+      "target": "self"
+    },
+    "Burning Jealousy": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Burn Up": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Buzzy Buzz": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Calm Mind": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Camouflage": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Captivate": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Catastropika": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Ceaseless Edge": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Celebrate": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Charge": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Charge Beam": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Charm": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Chatter": {
+      "priority": 0,
+      "target": "any"
+    },
+    "Chilling Water": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Chilly Reception": {
+      "priority": 0,
+      "target": "all"
+    },
+    "Chip Away": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Chloroblast": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Circle Throw": {
+      "priority": -6,
+      "target": "normal"
+    },
+    "Clamp": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Clanging Scales": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Clangorous Soul": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Clangorous Soulblaze": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Clear Smog": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Close Combat": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Coaching": {
+      "priority": 0,
+      "target": "adjacentAlly"
+    },
+    "Coil": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Collision Course": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Combat Torque": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Comet Punch": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Comeuppance": {
+      "priority": 0,
+      "target": "scripted"
+    },
+    "Confide": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Confuse Ray": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Confusion": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Constrict": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Continental Crush": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Conversion": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Conversion 2": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Copycat": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Core Enforcer": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Corkscrew Crash": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Corrosive Gas": {
+      "priority": 0,
+      "target": "allAdjacent"
+    },
+    "Cosmic Power": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Cotton Guard": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Cotton Spore": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Counter": {
+      "priority": -5,
+      "target": "scripted"
+    },
+    "Court Change": {
+      "priority": 0,
+      "target": "all"
+    },
+    "Covet": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Crabhammer": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Crafty Shield": {
+      "priority": 3,
+      "target": "allySide"
+    },
+    "Cross Chop": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Cross Poison": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Crunch": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Crush Claw": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Crush Grip": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Curse": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Cut": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Darkest Lariat": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Dark Pulse": {
+      "priority": 0,
+      "target": "any"
+    },
+    "Dark Void": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Dazzling Gleam": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Decorate": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Defend Order": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Defense Curl": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Defog": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Destiny Bond": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Detect": {
+      "priority": 4,
+      "target": "self"
+    },
+    "Devastating Drake": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Diamond Storm": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Dig": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Dire Claw": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Disable": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Disarming Voice": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Discharge": {
+      "priority": 0,
+      "target": "allAdjacent"
+    },
+    "Dive": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Dizzy Punch": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Doodle": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "Doom Desire": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Double-Edge": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Double Hit": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Double Iron Bash": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Double Kick": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Double Shock": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Double Slap": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Double Team": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Draco Meteor": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Dragon Ascent": {
+      "priority": 0,
+      "target": "any"
+    },
+    "Dragon Breath": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Dragon Cheer": {
+      "priority": 0,
+      "target": "adjacentAlly"
+    },
+    "Dragon Claw": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Dragon Dance": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Dragon Darts": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Dragon Energy": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Dragon Hammer": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Dragon Pulse": {
+      "priority": 0,
+      "target": "any"
+    },
+    "Dragon Rage": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Dragon Rush": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Dragon Tail": {
+      "priority": -6,
+      "target": "normal"
+    },
+    "Draining Kiss": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Drain Punch": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Dream Eater": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Drill Peck": {
+      "priority": 0,
+      "target": "any"
+    },
+    "Drill Run": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Drum Beating": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Dual Chop": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Dual Wingbeat": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Dynamax Cannon": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Dynamic Punch": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Earth Power": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Earthquake": {
+      "priority": 0,
+      "target": "allAdjacent"
+    },
+    "Echoed Voice": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Eerie Impulse": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Eerie Spell": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Egg Bomb": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Electric Terrain": {
+      "priority": 0,
+      "target": "all"
+    },
+    "Electrify": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Electro Ball": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Electro Drift": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Electro Shot": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Electroweb": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Embargo": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Ember": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Encore": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Endeavor": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Endure": {
+      "priority": 4,
+      "target": "self"
+    },
+    "Energy Ball": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Entrainment": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Eruption": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Esper Wing": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Eternabeam": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Expanding Force": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Explosion": {
+      "priority": 0,
+      "target": "allAdjacent"
+    },
+    "Extrasensory": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Extreme Evoboost": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Extreme Speed": {
+      "priority": 2,
+      "target": "normal"
+    },
+    "Facade": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Fairy Lock": {
+      "priority": 0,
+      "target": "all"
+    },
+    "Fairy Wind": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Fake Out": {
+      "priority": 3,
+      "target": "normal"
+    },
+    "Fake Tears": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "False Surrender": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "False Swipe": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Feather Dance": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Feint": {
+      "priority": 2,
+      "target": "normal"
+    },
+    "Feint Attack": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Fell Stinger": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Fickle Beam": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Fiery Dance": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Fiery Wrath": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Fillet Away": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Final Gambit": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Fire Blast": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Fire Fang": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Fire Lash": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Fire Pledge": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Fire Punch": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Fire Spin": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "First Impression": {
+      "priority": 2,
+      "target": "normal"
+    },
+    "Fishious Rend": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Fissure": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Flail": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Flame Burst": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Flame Charge": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Flamethrower": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Flame Wheel": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Flare Blitz": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Flash": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Flash Cannon": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Flatter": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Fleur Cannon": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Fling": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Flip Turn": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Floaty Fall": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Floral Healing": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Flower Shield": {
+      "priority": 0,
+      "target": "all"
+    },
+    "Flower Trick": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Fly": {
+      "priority": 0,
+      "target": "any"
+    },
+    "Flying Press": {
+      "priority": 0,
+      "target": "any"
+    },
+    "Focus Blast": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Focus Energy": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Focus Punch": {
+      "priority": -3,
+      "target": "normal"
+    },
+    "Follow Me": {
+      "priority": 2,
+      "target": "self"
+    },
+    "Force Palm": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Foresight": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Forest's Curse": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Foul Play": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Freeze-Dry": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Freeze Shock": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Freezing Glare": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Freezy Frost": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Frenzy Plant": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Frost Breath": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Frustration": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Fury Attack": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Fury Cutter": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Fury Swipes": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Fusion Bolt": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Fusion Flare": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Future Sight": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Gastro Acid": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Gear Grind": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Gear Up": {
+      "priority": 0,
+      "target": "allySide"
+    },
+    "Genesis Supernova": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Geomancy": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Giga Drain": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Giga Impact": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Gigaton Hammer": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Gigavolt Havoc": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Glacial Lance": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Glaciate": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Glaive Rush": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Glare": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Glitzy Glow": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "G-Max Befuddle": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "G-Max Cannonade": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "G-Max Centiferno": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "G-Max Chi Strike": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "G-Max Cuddle": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "G-Max Depletion": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "G-Max Drum Solo": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "G-Max Finale": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "G-Max Fireball": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "G-Max Foam Burst": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "G-Max Gold Rush": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "G-Max Gravitas": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "G-Max Hydrosnipe": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "G-Max Malodor": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "G-Max Meltdown": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "G-Max One Blow": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "G-Max Rapid Flow": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "G-Max Replenish": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "G-Max Resonance": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "G-Max Sandblast": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "G-Max Smite": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "G-Max Snooze": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "G-Max Steelsurge": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "G-Max Stonesurge": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "G-Max Stun Shock": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "G-Max Sweetness": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "G-Max Tartness": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "G-Max Terror": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "G-Max Vine Lash": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "G-Max Volcalith": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "G-Max Volt Crash": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "G-Max Wildfire": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "G-Max Wind Rage": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "Grass Knot": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Grass Pledge": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Grass Whistle": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Grassy Glide": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Grassy Terrain": {
+      "priority": 0,
+      "target": "all"
+    },
+    "Grav Apple": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Gravity": {
+      "priority": 0,
+      "target": "all"
+    },
+    "Growl": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Growth": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Grudge": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Guardian of Alola": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Guard Split": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Guard Swap": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Guillotine": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Gunk Shot": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Gust": {
+      "priority": 0,
+      "target": "any"
+    },
+    "Gyro Ball": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Hail": {
+      "priority": 0,
+      "target": "all"
+    },
+    "Hammer Arm": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Happy Hour": {
+      "priority": 0,
+      "target": "allySide"
+    },
+    "Harden": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Hard Press": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Haze": {
+      "priority": 0,
+      "target": "all"
+    },
+    "Headbutt": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Head Charge": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Headlong Rush": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Head Smash": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Heal Bell": {
+      "priority": 0,
+      "target": "allyTeam"
+    },
+    "Heal Block": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Healing Wish": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Heal Order": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Heal Pulse": {
+      "priority": 0,
+      "target": "any"
+    },
+    "Heart Stamp": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Heart Swap": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Heat Crash": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Heat Wave": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Heavy Slam": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Helping Hand": {
+      "priority": 5,
+      "target": "adjacentAlly"
+    },
+    "Hex": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Hidden Power": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Hidden Power Bug": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Hidden Power Dark": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Hidden Power Dragon": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Hidden Power Electric": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Hidden Power Fighting": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Hidden Power Fire": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Hidden Power Flying": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Hidden Power Ghost": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Hidden Power Grass": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Hidden Power Ground": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Hidden Power Ice": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Hidden Power Poison": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Hidden Power Psychic": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Hidden Power Rock": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Hidden Power Steel": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Hidden Power Water": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "High Horsepower": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "High Jump Kick": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Hold Back": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Hold Hands": {
+      "priority": 0,
+      "target": "adjacentAlly"
+    },
+    "Hone Claws": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Horn Attack": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Horn Drill": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Horn Leech": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Howl": {
+      "priority": 0,
+      "target": "allies"
+    },
+    "Hurricane": {
+      "priority": 0,
+      "target": "any"
+    },
+    "Hydro Cannon": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Hydro Pump": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Hydro Steam": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Hydro Vortex": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Hyper Beam": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Hyper Drill": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Hyper Fang": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Hyperspace Fury": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Hyperspace Hole": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Hyper Voice": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Hypnosis": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Ice Ball": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Ice Beam": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Ice Burn": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Ice Fang": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Ice Hammer": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Ice Punch": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Ice Shard": {
+      "priority": 1,
+      "target": "normal"
+    },
+    "Ice Spinner": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Icicle Crash": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Icicle Spear": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Icy Wind": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Imprison": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Incinerate": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Infernal Parade": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Inferno": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Inferno Overdrive": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Infestation": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Ingrain": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Instruct": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Ion Deluge": {
+      "priority": 1,
+      "target": "all"
+    },
+    "Iron Defense": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Iron Head": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Iron Tail": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Ivy Cudgel": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Jaw Lock": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Jet Punch": {
+      "priority": 1,
+      "target": "normal"
+    },
+    "Judgment": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Jump Kick": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Jungle Healing": {
+      "priority": 0,
+      "target": "allies"
+    },
+    "Karate Chop": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Kinesis": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "King's Shield": {
+      "priority": 4,
+      "target": "self"
+    },
+    "Knock Off": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Kowtow Cleave": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Land's Wrath": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Laser Focus": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Lash Out": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Last Resort": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Last Respects": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Lava Plume": {
+      "priority": 0,
+      "target": "allAdjacent"
+    },
+    "Leafage": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Leaf Blade": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Leaf Storm": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Leaf Tornado": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Leech Life": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Leech Seed": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Leer": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Let's Snuggle Forever": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Lick": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Life Dew": {
+      "priority": 0,
+      "target": "allies"
+    },
+    "Light of Ruin": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Light Screen": {
+      "priority": 0,
+      "target": "allySide"
+    },
+    "Light That Burns the Sky": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Liquidation": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Lock-On": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Lovely Kiss": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Low Kick": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Low Sweep": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Lucky Chant": {
+      "priority": 0,
+      "target": "allySide"
+    },
+    "Lumina Crash": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Lunar Blessing": {
+      "priority": 0,
+      "target": "allies"
+    },
+    "Lunar Dance": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Lunge": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Luster Purge": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Mach Punch": {
+      "priority": 1,
+      "target": "normal"
+    },
+    "Magical Leaf": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Magical Torque": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Magic Coat": {
+      "priority": 4,
+      "target": "self"
+    },
+    "Magic Powder": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Magic Room": {
+      "priority": 0,
+      "target": "all"
+    },
+    "Magma Storm": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Magnet Bomb": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Magnetic Flux": {
+      "priority": 0,
+      "target": "allySide"
+    },
+    "Magnet Rise": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Magnitude": {
+      "priority": 0,
+      "target": "allAdjacent"
+    },
+    "Make It Rain": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Malicious Moonsault": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Malignant Chain": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Mat Block": {
+      "priority": 0,
+      "target": "allySide"
+    },
+    "Matcha Gotcha": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Max Airstream": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "Max Darkness": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "Max Flare": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "Max Flutterby": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "Max Geyser": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "Max Guard": {
+      "priority": 4,
+      "target": "self"
+    },
+    "Max Hailstorm": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "Max Knuckle": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "Max Lightning": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "Max Mindstorm": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "Max Ooze": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "Max Overgrowth": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "Max Phantasm": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "Max Quake": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "Max Rockfall": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "Max Starfall": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "Max Steelspike": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "Max Strike": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "Max Wyrmwind": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "Mean Look": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Meditate": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Me First": {
+      "priority": 0,
+      "target": "adjacentFoe"
+    },
+    "Mega Drain": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Megahorn": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Mega Kick": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Mega Punch": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Memento": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Menacing Moonraze Maelstrom": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Metal Burst": {
+      "priority": 0,
+      "target": "scripted"
+    },
+    "Metal Claw": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Metal Sound": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Meteor Assault": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Meteor Beam": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Meteor Mash": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Metronome": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Mighty Cleave": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Milk Drink": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Mimic": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Mind Blown": {
+      "priority": 0,
+      "target": "allAdjacent"
+    },
+    "Mind Reader": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Minimize": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Miracle Eye": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Mirror Coat": {
+      "priority": -5,
+      "target": "scripted"
+    },
+    "Mirror Move": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Mirror Shot": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Mist": {
+      "priority": 0,
+      "target": "allySide"
+    },
+    "Mist Ball": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Misty Explosion": {
+      "priority": 0,
+      "target": "allAdjacent"
+    },
+    "Misty Terrain": {
+      "priority": 0,
+      "target": "all"
+    },
+    "Moonblast": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Moongeist Beam": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Moonlight": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Morning Sun": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Mortal Spin": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Mountain Gale": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Mud Bomb": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Muddy Water": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Mud Shot": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Mud-Slap": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Mud Sport": {
+      "priority": 0,
+      "target": "all"
+    },
+    "Multi-Attack": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Mystical Fire": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Mystical Power": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Nasty Plot": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Natural Gift": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Nature Power": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Nature's Madness": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Needle Arm": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Never-Ending Nightmare": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Night Daze": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Nightmare": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Night Shade": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Night Slash": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Nihil Light": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Noble Roar": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "No Retreat": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Noxious Torque": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Nuzzle": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Oblivion Wing": {
+      "priority": 0,
+      "target": "any"
+    },
+    "Obstruct": {
+      "priority": 4,
+      "target": "self"
+    },
+    "Oceanic Operetta": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Octazooka": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Octolock": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Odor Sleuth": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Ominous Wind": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Order Up": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Origin Pulse": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Outrage": {
+      "priority": 0,
+      "target": "randomNormal"
+    },
+    "Overdrive": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Overheat": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Pain Split": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Parabolic Charge": {
+      "priority": 0,
+      "target": "allAdjacent"
+    },
+    "Parting Shot": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Payback": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Pay Day": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Peck": {
+      "priority": 0,
+      "target": "any"
+    },
+    "Perish Song": {
+      "priority": 0,
+      "target": "all"
+    },
+    "Petal Blizzard": {
+      "priority": 0,
+      "target": "allAdjacent"
+    },
+    "Petal Dance": {
+      "priority": 0,
+      "target": "randomNormal"
+    },
+    "Phantom Force": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Photon Geyser": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Pika Papow": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Pin Missile": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Plasma Fists": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Play Nice": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Play Rough": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Pluck": {
+      "priority": 0,
+      "target": "any"
+    },
+    "Poison Fang": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Poison Gas": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Poison Jab": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Poison Powder": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Poison Sting": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Poison Tail": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Pollen Puff": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Poltergeist": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Population Bomb": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Pounce": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Pound": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Powder": {
+      "priority": 1,
+      "target": "normal"
+    },
+    "Powder Snow": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Power Gem": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Power Shift": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Power Split": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Power Swap": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Power Trick": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Power Trip": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Power-Up Punch": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Power Whip": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Precipice Blades": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Present": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Prismatic Laser": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Protect": {
+      "priority": 4,
+      "target": "self"
+    },
+    "Psybeam": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Psyblade": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Psychic": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Psychic Fangs": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Psychic Noise": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Psychic Terrain": {
+      "priority": 0,
+      "target": "all"
+    },
+    "Psycho Boost": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Psycho Cut": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Psycho Shift": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Psych Up": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Psyshield Bash": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Psyshock": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Psystrike": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Psywave": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Pulverizing Pancake": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Punishment": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Purify": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Pursuit": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Pyro Ball": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Quash": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Quick Attack": {
+      "priority": 1,
+      "target": "normal"
+    },
+    "Quick Guard": {
+      "priority": 3,
+      "target": "allySide"
+    },
+    "Quiver Dance": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Rage": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Rage Fist": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Rage Powder": {
+      "priority": 2,
+      "target": "self"
+    },
+    "Raging Bull": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Raging Fury": {
+      "priority": 0,
+      "target": "randomNormal"
+    },
+    "Rain Dance": {
+      "priority": 0,
+      "target": "all"
+    },
+    "Rapid Spin": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Razor Leaf": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Razor Shell": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Razor Wind": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Recover": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Recycle": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Reflect": {
+      "priority": 0,
+      "target": "allySide"
+    },
+    "Reflect Type": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Refresh": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Relic Song": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Rest": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Retaliate": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Return": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Revelation Dance": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Revenge": {
+      "priority": -4,
+      "target": "normal"
+    },
+    "Reversal": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Revival Blessing": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Rising Voltage": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Roar": {
+      "priority": -6,
+      "target": "normal"
+    },
+    "Roar of Time": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Rock Blast": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Rock Climb": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Rock Polish": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Rock Slide": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Rock Smash": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Rock Throw": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Rock Tomb": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Rock Wrecker": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Role Play": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Rolling Kick": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Rollout": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Roost": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Rototiller": {
+      "priority": 0,
+      "target": "all"
+    },
+    "Round": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Ruination": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Sacred Fire": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Sacred Sword": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Safeguard": {
+      "priority": 0,
+      "target": "allySide"
+    },
+    "Salt Cure": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Sand Attack": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Sandsear Storm": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Sandstorm": {
+      "priority": 0,
+      "target": "all"
+    },
+    "Sand Tomb": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Sappy Seed": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Savage Spin-Out": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Scald": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Scale Shot": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Scary Face": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Scorching Sands": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Scratch": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Screech": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Searing Shot": {
+      "priority": 0,
+      "target": "allAdjacent"
+    },
+    "Searing Sunraze Smash": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Secret Power": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Secret Sword": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Seed Bomb": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Seed Flare": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Seismic Toss": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Self-Destruct": {
+      "priority": 0,
+      "target": "allAdjacent"
+    },
+    "Shadow Ball": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Shadow Bone": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Shadow Claw": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Shadow Force": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Shadow Punch": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Shadow Sneak": {
+      "priority": 1,
+      "target": "normal"
+    },
+    "Sharpen": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Shattered Psyche": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Shed Tail": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Sheer Cold": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Shell Side Arm": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Shell Smash": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Shell Trap": {
+      "priority": -3,
+      "target": "allAdjacentFoes"
+    },
+    "Shelter": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Shift Gear": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Shock Wave": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Shore Up": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Signal Beam": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Silk Trap": {
+      "priority": 4,
+      "target": "self"
+    },
+    "Silver Wind": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Simple Beam": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Sing": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Sinister Arrow Raid": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Sizzly Slide": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Sketch": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Skill Swap": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Skitter Smack": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Skull Bash": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Sky Attack": {
+      "priority": 0,
+      "target": "any"
+    },
+    "Sky Drop": {
+      "priority": 0,
+      "target": "any"
+    },
+    "Sky Uppercut": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Slack Off": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Slam": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Slash": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Sleep Powder": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Sleep Talk": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Sludge": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Sludge Bomb": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Sludge Wave": {
+      "priority": 0,
+      "target": "allAdjacent"
+    },
+    "Smack Down": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Smart Strike": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Smelling Salts": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Smog": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Smokescreen": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Snap Trap": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Snarl": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Snatch": {
+      "priority": 4,
+      "target": "self"
+    },
+    "Snipe Shot": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Snore": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Snowscape": {
+      "priority": 0,
+      "target": "all"
+    },
+    "Soak": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Soft-Boiled": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Solar Beam": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Solar Blade": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Sonic Boom": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Soul-Stealing 7-Star Strike": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Spacial Rend": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Spark": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Sparkling Aria": {
+      "priority": 0,
+      "target": "allAdjacent"
+    },
+    "Sparkly Swirl": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Spectral Thief": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Speed Swap": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Spicy Extract": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Spider Web": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Spike Cannon": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Spikes": {
+      "priority": 0,
+      "target": "foeSide"
+    },
+    "Spiky Shield": {
+      "priority": 4,
+      "target": "self"
+    },
+    "Spin Out": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Spirit Break": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Spirit Shackle": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Spite": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Spit Up": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Splash": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Splintered Stormshards": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Splishy Splash": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Spore": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Spotlight": {
+      "priority": 3,
+      "target": "normal"
+    },
+    "Springtide Storm": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Stealth Rock": {
+      "priority": 0,
+      "target": "foeSide"
+    },
+    "Steam Eruption": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Steamroller": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Steel Beam": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Steel Roller": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Steel Wing": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Sticky Web": {
+      "priority": 0,
+      "target": "foeSide"
+    },
+    "Stockpile": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Stoked Sparksurfer": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Stomp": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Stomping Tantrum": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Stone Axe": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Stone Edge": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Stored Power": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Storm Throw": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Strange Steam": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Strength": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Strength Sap": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "String Shot": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Struggle": {
+      "priority": 0,
+      "target": "randomNormal"
+    },
+    "Struggle Bug": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Stuff Cheeks": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Stun Spore": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Submission": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Substitute": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Subzero Slammer": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Sucker Punch": {
+      "priority": 1,
+      "target": "normal"
+    },
+    "Sunny Day": {
+      "priority": 0,
+      "target": "all"
+    },
+    "Sunsteel Strike": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Supercell Slam": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Super Fang": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Superpower": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Supersonic": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Supersonic Skystrike": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Surf": {
+      "priority": 0,
+      "target": "allAdjacent"
+    },
+    "Surging Strikes": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Swagger": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Swallow": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Sweet Kiss": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Sweet Scent": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Swift": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Switcheroo": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Swords Dance": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Synchronoise": {
+      "priority": 0,
+      "target": "allAdjacent"
+    },
+    "Synthesis": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Syrup Bomb": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Tachyon Cutter": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Tackle": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Tail Glow": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Tail Slap": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Tail Whip": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Tailwind": {
+      "priority": 0,
+      "target": "allySide"
+    },
+    "Take Down": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Take Heart": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Tar Shot": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Taunt": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Tearful Look": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Teatime": {
+      "priority": 0,
+      "target": "all"
+    },
+    "Techno Blast": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Tectonic Rage": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Teeter Dance": {
+      "priority": 0,
+      "target": "allAdjacent"
+    },
+    "Telekinesis": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Teleport": {
+      "priority": -6,
+      "target": "self"
+    },
+    "Temper Flare": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Tera Blast": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Tera Starstorm": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Terrain Pulse": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Thief": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Thousand Arrows": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Thousand Waves": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Thrash": {
+      "priority": 0,
+      "target": "randomNormal"
+    },
+    "Throat Chop": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Thunder": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Thunderbolt": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Thunder Cage": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Thunderclap": {
+      "priority": 1,
+      "target": "normal"
+    },
+    "Thunder Fang": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Thunderous Kick": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Thunder Punch": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Thunder Shock": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Thunder Wave": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Tickle": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Tidy Up": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Topsy-Turvy": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Torch Song": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Torment": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Toxic": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Toxic Spikes": {
+      "priority": 0,
+      "target": "foeSide"
+    },
+    "Toxic Thread": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Trailblaze": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Transform": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Tri Attack": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Trick": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Trick-or-Treat": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Trick Room": {
+      "priority": -7,
+      "target": "all"
+    },
+    "Triple Arrows": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Triple Axel": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Triple Dive": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Triple Kick": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Trop Kick": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Trump Card": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Twin Beam": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Twineedle": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Twinkle Tackle": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Twister": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Upper Hand": {
+      "priority": 3,
+      "target": "normal"
+    },
+    "Uproar": {
+      "priority": 0,
+      "target": "randomNormal"
+    },
+    "U-turn": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Vacuum Wave": {
+      "priority": 1,
+      "target": "normal"
+    },
+    "V-create": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Veevee Volley": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Venom Drench": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Venoshock": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Victory Dance": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Vine Whip": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Vise Grip": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Vital Throw": {
+      "priority": -1,
+      "target": "normal"
+    },
+    "Volt Switch": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Volt Tackle": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Wake-Up Slap": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Waterfall": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Water Gun": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Water Pledge": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Water Pulse": {
+      "priority": 0,
+      "target": "any"
+    },
+    "Water Shuriken": {
+      "priority": 1,
+      "target": "normal"
+    },
+    "Water Sport": {
+      "priority": 0,
+      "target": "all"
+    },
+    "Water Spout": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Wave Crash": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Weather Ball": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Whirlpool": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Whirlwind": {
+      "priority": -6,
+      "target": "normal"
+    },
+    "Wicked Blow": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Wicked Torque": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Wide Guard": {
+      "priority": 3,
+      "target": "allySide"
+    },
+    "Wildbolt Storm": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    },
+    "Wild Charge": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Will-O-Wisp": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Wing Attack": {
+      "priority": 0,
+      "target": "any"
+    },
+    "Wish": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Withdraw": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Wonder Room": {
+      "priority": 0,
+      "target": "all"
+    },
+    "Wood Hammer": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Work Up": {
+      "priority": 0,
+      "target": "self"
+    },
+    "Worry Seed": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Wrap": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Wring Out": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "X-Scissor": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Yawn": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Zap Cannon": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Zen Headbutt": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Zing Zap": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Zippy Zap": {
+      "priority": 2,
+      "target": "normal"
+    },
+    "Paleo Wave": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Shadow Strike": {
+      "priority": 0,
+      "target": "normal"
+    },
+    "Polar Flare": {
+      "priority": 0,
+      "target": "allAdjacentFoes"
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "name": "vgc-meta-lens",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Champions team-to-metagame damage analysis with traceable sources",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "server": "node server/index.mjs",
+    "build": "vite build",
+    "start": "node server/index.mjs --open",
+    "test": "node --test tests/*.test.mjs",
+    "check": "npm test && npm run build"
+  },
+  "dependencies": {
+    "cheerio": "^1.1.2",
+    "csv-parse": "^7.0.3",
+    "express": "^5.1.0",
+    "extend": "^3.0.2",
+    "lucide-react": "^0.468.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@smogon/calc": "^0.12.0",
+    "@vitejs/plugin-react": "^5.0.3",
+    "prettier": "^3.9.9",
+    "vite": "^7.1.7"
+  },
+  "engines": {
+    "node": ">=22.12"
+  }
+}
