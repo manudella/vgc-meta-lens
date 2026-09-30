@@ -39,3 +39,9 @@ Earlier records above describe prior versions; the initiative panel and manual f
 - All eight requested Mega artwork URLs returned HTTP 200 from PokeAPI's official-artwork collection; exact species IDs came from PokeAPI's Pokemon table.
 - Removed coverage summary and sidebar slogan. Damage bars apply to both diagonal halves and both single-direction modes; the gap filter sits beside search.
 - Browser verification: two-member text import produced eight exact cells; selecting MC405 from Published teams produced six opponent rows / 24 cells while preserving the four-member user team. Changing the opponent Rillaboom nature to Brave updated its matrix label and effective speed; restored Adamant afterward. Mega Staraptor rendered its 475px artwork. Both damage-only modes and the split view use damage range bars.
+
+## Version 0.3.1: separate damage, KO and speed signals
+
+- Matrix backgrounds now encode only maximum damage (green/yellow/red); neither KO probability nor speed changes the background.
+- KO probabilities above 50% use a dark-red badge with white text. Split cells show the outgoing and incoming move names. Speed remains a separate text label.
+- All 45 tests and the production build pass after the display changes.

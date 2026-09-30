@@ -328,7 +328,7 @@
   }
 }
 
-/* Two-direction matchup cells. The faster side receives the vivid shade. */
+/* Two-direction matchup cells: background color encodes damage only. */
 .matrix-page .split-cell {
   position: relative;
   height: 148px;
@@ -358,15 +358,6 @@
 }
 .split-bg.unknown {
   background: #e7e8e3;
-}
-.split-bg.good.faster {
-  background: #79d397;
-}
-.split-bg.bad.faster {
-  background: #f28b7f;
-}
-.split-bg.mixed.faster {
-  background: #e7c45c;
 }
 .split-out,
 .split-in {
@@ -574,7 +565,7 @@
   width: min(58%, 190px);
 }
 .matrix-page .split-cell {
-  height: 162px;
+  height: 190px;
 }
 .split-bg.low {
   background: #d6edda;
@@ -584,21 +575,6 @@
 }
 .split-bg.high {
   background: #f3d3d0;
-}
-.split-bg.lethal {
-  background: #e5cbed;
-}
-.split-bg.low.faster {
-  background: #80d49b;
-}
-.split-bg.medium.faster {
-  background: #efd068;
-}
-.split-bg.high.faster {
-  background: #f08881;
-}
-.split-bg.lethal.faster {
-  background: #cf8fe8;
 }
 .matrix-page .calc-cell.damage-tone.low {
   background: #e0f0df;
@@ -612,16 +588,11 @@
   background: #fbe0da;
   color: #ab342c;
 }
-.matrix-page .calc-cell.damage-tone.lethal {
-  background: #eccff6;
-  color: #632381;
-  border: 1px solid #b06cce;
-}
 .matrix-page .calc-cell .ko-alert {
   display: inline-block;
   padding: 2px 5px;
   border-radius: 4px;
-  background: #742b91;
+  background: #842d24;
   color: white;
   font-weight: 800;
   font-size: 9px;
@@ -640,4 +611,15 @@
 }
 .published .opponent-load {
   margin-top: 6px;
+}
+
+.split-cell .cell-move {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 1px 0 3px;
 }

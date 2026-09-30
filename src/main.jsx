@@ -839,7 +839,7 @@ function App() {
                   <Info size={14} />
                   Bars show damage: solid to minimum, striped to maximum (100%
                   HP scale). Color uses maximum damage; ✹ marks KO chance above
-                  50%. Brighter half = faster.{" "}
+                  50%. Speed is labeled separately.{" "}
                   <strong>Click any cell to inspect.</strong>
                 </div>
                 <div className="matrix-context">

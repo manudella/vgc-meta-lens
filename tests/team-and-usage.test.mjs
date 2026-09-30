@@ -110,7 +110,7 @@ test("remaining observed tournament form labels map, unknown future forms are di
   assert.equal(u.unmapped["Basculegion [Unknown Form]"], 1);
   assert.deepEqual(u.usage, {});
 });
-test("damage color follows maximum roll, KO marker is strictly above 50%, bars cap at full HP", () => {
+test("damage color follows maximum roll independently of KO chance; bars cap at full HP", () => {
   for (const [max, tone] of [
     [0, "low"],
     [49.9, "low"],
@@ -120,7 +120,7 @@ test("damage color follows maximum roll, KO marker is strictly above 50%, bars c
     [140, "high"],
   ])
     assert.equal(damageTone({ maxPercent: max }, 0.5), tone);
-  assert.equal(damageTone({ maxPercent: 70 }, 0.50001), "lethal");
+  assert.equal(damageTone({ maxPercent: 70 }, 0.50001), "medium");
   assert.equal(damageTone(null, null), "unknown");
   assert.deepEqual(damageBar({ minPercent: 25, maxPercent: 65 }), {
     min: 25,

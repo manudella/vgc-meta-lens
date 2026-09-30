@@ -42,29 +42,31 @@ export function MatrixCell({ cell: c, mode, own, foe, expanded, onClick }) {
       className={
         both
           ? "calc-cell split-cell"
-          : `calc-cell damage-tone ${damageTone(damage, ko)}`
+          : `calc-cell damage-tone ${damageTone(damage)}`
       }
       onClick={onClick}
       aria-expanded={expanded}
       aria-label={`${own} vs ${foe}: dealt ${range(c.out)}, received ${range(c.incoming)}. Open matchup.`}
-      title={`${c.out?.move || "No damage"}: ${pct(c.ko)} OHKO; ${c.incoming?.move || "No damage"}: ${pct(receivedKo)} incoming OHKO. Bars: minimum to maximum damage, capped at 100% HP. Color: maximum damage. Brighter half = faster; priority can change order.`}
+      title={`${c.out?.move || "No damage"}: ${pct(c.ko)} OHKO; ${c.incoming?.move || "No damage"}: ${pct(receivedKo)} incoming OHKO. Bars: minimum to maximum damage, capped at 100% HP. Color: maximum damage. Speed is labeled separately; priority can change order.`}
     >
       {both ? (
         <>
-          <span
-            className={`split-bg dealt ${damageTone(c.out, c.ko)} ${p.faster > 0.999 ? "faster" : ""}`}
-          />
-          <span
-            className={`split-bg received ${damageTone(c.incoming, receivedKo)} ${p.slower > 0.999 ? "faster" : ""}`}
-          />
+          <span className={`split-bg dealt ${damageTone(c.out)}`} />
+          <span className={`split-bg received ${damageTone(c.incoming)}`} />
           <span className="split-out">
-            <small>↗ DEALT {p.faster > 0.999 ? "⚡" : ""}</small>
+            <small>↗ DEALT</small>
+            <span className="cell-move" title={c.out?.move}>
+              {c.out?.move || "No damaging move"}
+            </span>
             <strong>{range(c.out)}</strong>
             <DamageBar damage={c.out} />
             <KoLabel ko={c.ko} fallback={`${pct(c.ko)} OHKO`} />
           </span>
           <span className="split-in">
-            <small>↙ RECEIVED {p.slower > 0.999 ? "⚡" : ""}</small>
+            <small>↙ RECEIVED</small>
+            <span className="cell-move" title={c.incoming?.move}>
+              {c.incoming?.move || "No damaging move"}
+            </span>
             <strong>{range(c.incoming)}</strong>
             <DamageBar damage={c.incoming} />
             <KoLabel ko={receivedKo} fallback={`${pct(c.survive)} survive`} />

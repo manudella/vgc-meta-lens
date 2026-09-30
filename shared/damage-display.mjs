@@ -1,6 +1,5 @@
-export function damageTone(damage, ko) {
+export function damageTone(damage) {
   if (!damage) return "unknown";
-  if (ko != null && ko > 0.5) return "lethal";
   return damage.maxPercent < 50
     ? "low"
     : damage.maxPercent <= 80
