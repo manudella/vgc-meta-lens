@@ -1,0 +1,80 @@
+.pokemon-sprite {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 56px;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+.pokemon-sprite img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+.pokemon-sprite.small {
+  width: 42px;
+  height: 38px;
+}
+.pokemon-sprite > span {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #e8efdf;
+  font-size: 11px;
+  color: #647554;
+}
+.team-chip-select .pokemon-sprite {
+  margin: -5px 0;
+}
+.matrix th .pokemon-sprite {
+  margin: -5px 0;
+}
+.quick-set-title .pokemon-sprite {
+  margin: -10px 0;
+}
+.stage-note {
+  display: block;
+  font-size: 8px;
+  color: #758a64;
+  margin-top: 4px;
+}
+.team-preview {
+  display: grid !important;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 2px;
+  align-items: start !important;
+  margin: 16px 0;
+  padding: 9px 2px;
+  border-radius: 8px;
+  background: #f0f5e8;
+}
+.team-preview figure {
+  margin: 0;
+  min-width: 0;
+  text-align: center;
+}
+.team-preview .pokemon-sprite {
+  width: 100%;
+  height: 52px;
+}
+.team-preview figcaption {
+  font-size: 8px;
+  color: #66785a;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.preview-missing {
+  color: #87927b;
+  font-size: 10px;
+  margin: 16px 0;
+}
+.matchup-heading h3 {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}

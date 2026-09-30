@@ -19,3 +19,14 @@ Limits: no real-game replay oracle or exhaustive Champions mechanic validation w
 - Scope tests verify tournament ordering, whole-dataset search outside the top 20, rank fallback and invalid selection rejection.
 - Local six-member API check: top 20 / 120 cells took 913 ms; a repeated cached request took 7 ms. Full loaded metagame: 257 threats / 1,542 cells in 10,207 ms, zero calculation exceptions. Timings are machine- and dataset-dependent.
 - Browser checks exercised offense/defense gap filters, searching Flapple outside the top-20 scope, quick +1 Attack and Trick Room, and expanding Rillaboom versus Incineroar. Automatic Intimidate returned effective Attack to neutral, and automatic Grassy Terrain remained active.
+
+## Version 0.2.0 refinements
+
+- 40 offline tests and the production build pass. Added regressions for final-stage overrides, auto Intimidate prevention/Defiant, exact-form sprite names, CSV team previews, EV-labeled Champions SP, automatic move terrain, automatic investment axes/legal budgets, and regulation-date event selection.
+- Browser verified: default diagonal dealt/received matrix; both single-direction modes; Intimidate visibly -1, + changes it to 0 without another drop, Reset restores automatic effects; compact numeric speed/range; published-set picker with full actual SP; adjacent expandable set editors; 33 attacking investments and 1,089 HP/Defense combinations.
+- Mega Raichu Y official artwork loaded at intrinsic width 384; Kommo-o Showdown sprite loaded at width 96. Published previews use all six sheet roster columns, even without spreads. Exact-form missing assets show initials instead of a misleading base form.
+- M-C defaults select all three currently indexed events in the regulation date window and all published teams. This snapshot indexes 409 team previews, with spread-bearing valid teams loaded into matchup choices; unsupported published moves remain visible source warnings. The old 100-card display cap is removed.
+- Live sample parsing confirms Dragonite 2 HP / 32 SpA / 32 Spe is preserved from a Champions paste labeled EVs. Conventional 252 EV imports still convert to 32 SP. Lowercase nature labels are normalized.
+- Terrain-dependent moves assume their enabling terrain only when no terrain-setting ability or explicit terrain overrides it; this assumption can be disabled with the quick Move terrain button. Tests compare automatic Expanding Force against explicit Psychic Terrain and against None.
+
+Earlier records above describe prior versions; the initiative panel and manual funding-stat explorer were replaced in 0.2.0. No exhaustive game oracle validation is claimed.

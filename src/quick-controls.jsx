@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Minus,
   Plus,
@@ -10,6 +10,8 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import "./quick-controls.css";
+import { displayedStage, resetBattleState } from "../shared/battle-state.mjs";
+import { PokemonSprite } from "./pokemon-sprite.jsx";
 const stats = [
   ["at", "ATK"],
   ["df", "DEF"],
@@ -18,7 +20,7 @@ const stats = [
   ["sp", "SPE"],
 ];
 const chance = (n) => `${Math.round((n || 0) * 100)}%`;
-export function Stepper({ label, value, onChange, min = -6, max = 6 }) {
+export function Stepper({ label, value, onChange, min = -6, max = 6, note }) {
   return (
     <label className="stepper">
       <span>{label.replace(/^.* (ATK|DEF|SPA|SPD|SPE) stage$/, "$1")}</span>
@@ -46,6 +48,7 @@ export function Stepper({ label, value, onChange, min = -6, max = 6 }) {
           <Plus size={12} />
         </button>
       </div>
+      {note && <small className="stage-note">{note}</small>}
     </label>
   );
 }
@@ -73,6 +76,7 @@ export function QuickSet({
   return (
     <div className="quick-set">
       <div className="quick-set-title">
+        <PokemonSprite name={effective?.name || value.species} small />
         <strong>{title}</strong>
         <small>
           {effective
@@ -81,7 +85,7 @@ export function QuickSet({
         </small>
         <button
           className="text-button"
-          onClick={() => onChange({ ...value, boosts: {}, hpPercent: 100 })}
+          onClick={() => onChange(resetBattleState(value))}
         >
           <RotateCcw size={12} />
           Reset stages & HP
@@ -92,8 +96,18 @@ export function QuickSet({
           <Stepper
             key={k}
             label={`${value.species} ${label} stage`}
-            value={value.boosts?.[k] || 0}
-            onChange={(v) => update("boosts", { ...value.boosts, [k]: v })}
+            value={displayedStage(value, effective, k)}
+            note={
+              value.stageOverrides?.[k] != null
+                ? `Override${effective ? ` · auto ${effective.automaticBoosts?.[k] ?? 0}` : ""}`
+                : effective?.boosts?.[k] !== undefined &&
+                    effective.boosts[k] !== (value.boosts?.[k] || 0)
+                  ? "Automatic"
+                  : ""
+            }
+            onChange={(v) =>
+              update("stageOverrides", { ...value.stageOverrides, [k]: v })
+            }
           />
         ))}
         <label className="quick-hp">
@@ -155,8 +169,11 @@ export function QuickSet({
         )}
       </div>
       <div className="quick-hint">
-        Buttons set manual stages. Automatic ability and item changes are added
-        once per calculation.
+        {effective
+          ? "Stages shown are the final values used in this matchup, including automatic abilities and items."
+          : "Automatic stages vary by opponent; open a matchup to see its final values."}{" "}
+        ± sets a final-stage override. Reset restores automatic stages and full
+        HP.
       </div>
     </div>
   );
@@ -209,6 +226,15 @@ export function QuickField({ options, onChange }) {
         ))}
       </div>
       <div className="field-pills battle-toggles">
+        <button
+          className={options.autoMoveConditions !== false ? "on" : ""}
+          onClick={() =>
+            set("autoMoveConditions", options.autoMoveConditions === false)
+          }
+          title="With Auto terrain and no terrain-setting ability, assume the terrain needed by Expanding Force, Rising Voltage, Grassy Glide or Misty Explosion. Choose a terrain explicitly to override."
+        >
+          Move terrain {options.autoMoveConditions !== false ? "auto" : "off"}
+        </button>
         <button
           className={options.trickRoom ? "on trick-room" : ""}
           onClick={() => set("trickRoom", !options.trickRoom)}
@@ -291,103 +317,5 @@ export function PaceBadge({ cell }) {
         {first}
       </span>
     </span>
-  );
-}
-export function InitiativePanel({ calc, trickRoom }) {
-  const [own, setOwn] = useState(""),
-    [foe, setFoe] = useState("");
-  const ownMove =
-    calc.outgoing.find((m) => m.move === own) ||
-    calc.outgoing.find((m) => !m.support) ||
-    calc.outgoing[0];
-  const foeMove =
-    calc.incoming.find((m) => m.move === foe) ||
-    calc.incoming.find((m) => !m.support) ||
-    calc.incoming[0];
-  const order = calc.orders.find(
-    (o) => o.teamMove === ownMove.move && o.opponentMove === foeMove.move,
-  );
-  return (
-    <div className="initiative">
-      <div className="initiative-title">
-        <Zap size={18} />
-        <strong>Who acts first?</strong>
-        {trickRoom && <span className="tag">Trick Room active</span>}
-      </div>
-      <div className="initiative-grid">
-        <div>
-          <small>YOUR EFFECTIVE SPEED</small>
-          <strong>{calc.teamStats.sp}</strong>
-          <label>
-            <select
-              aria-label="Your move for turn order"
-              value={ownMove.move}
-              onChange={(e) => setOwn(e.target.value)}
-            >
-              {calc.outgoing.map((m) => (
-                <option key={m.move} value={m.move}>
-                  {m.move} · priority {m.priority > 0 ? "+" : ""}
-                  {m.priority ?? "?"}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-        <div
-          className={
-            "order-result " +
-            (order?.first === "team"
-              ? "ahead"
-              : order?.first === "opponent"
-                ? "behind"
-                : "")
-          }
-        >
-          <span>
-            {order?.speed === "team"
-              ? "↑ You are faster"
-              : order?.speed === "opponent"
-                ? "↓ Opponent is faster"
-                : "↔ Speed tie"}
-          </span>
-          <strong>
-            {order?.first === "team"
-              ? "You act first"
-              : order?.first === "opponent"
-                ? "Opponent acts first"
-                : order?.first === "tie"
-                  ? "50 / 50 order"
-                  : order?.first === "blocked"
-                    ? "Priority blocked"
-                    : "Order uncertain"}
-          </strong>
-          <small>{order?.reason}</small>
-        </div>
-        <div>
-          <small>OPPONENT EFFECTIVE SPEED</small>
-          <strong>{calc.opponentStats.sp}</strong>
-          <label>
-            <select
-              aria-label="Opponent move for turn order"
-              value={foeMove.move}
-              onChange={(e) => setFoe(e.target.value)}
-            >
-              {calc.incoming.map((m) => (
-                <option key={m.move} value={m.move}>
-                  {m.move} · priority {m.priority > 0 ? "+" : ""}
-                  {m.priority ?? "?"}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-      </div>
-      <p>
-        Higher priority goes first. Trick Room reverses speed order within the
-        same priority bracket. Order assumes the selected actions are usable; it
-        does not predict switches, flinches or whether a first hit prevents the
-        reply.
-      </p>
-    </div>
   );
 }

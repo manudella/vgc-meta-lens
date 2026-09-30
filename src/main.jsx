@@ -25,13 +25,14 @@ import {
 } from "lucide-react";
 import "./style.css";
 import "./matrix.css";
-import {
-  QuickSet,
-  QuickField,
-  PaceBadge,
-  InitiativePanel,
-  Stepper,
-} from "./quick-controls.jsx";
+import { PokemonSprite } from "./pokemon-sprite.jsx";
+import { displaySpecies } from "../shared/sprites.mjs";
+import { SetPicker } from "./set-picker.jsx";
+import { MatrixCell } from "./matrix-cell.jsx";
+import { InvestmentExplorer } from "./investment-explorer.jsx";
+import { LATEST_METAGAME, metagameEvents } from "../shared/metagames.mjs";
+import { displayedStage } from "../shared/battle-state.mjs";
+import { QuickSet, QuickField, PaceBadge, Stepper } from "./quick-controls.jsx";
 
 const keys = ["hp", "at", "df", "sa", "sd", "sp"],
   labels = ["HP", "ATK", "DEF", "SPA", "SPD", "SPE"];
@@ -90,31 +91,8 @@ async function api(path, body, signal) {
 const pct = (x) =>
   x == null ? "—" : `${(x * 100).toFixed(x === 0 || x === 1 ? 0 : 1)}%`;
 const num = (x) => Number(x).toFixed(1);
-function initials(s) {
-  return s
-    .replace("Mega ", "")
-    .split(/[ -]/)
-    .map((x) => x[0])
-    .slice(0, 2)
-    .join("");
-}
-const colors = [
-  "#bad7a1",
-  "#e8b29e",
-  "#a9bdde",
-  "#dcca88",
-  "#cab6d7",
-  "#9eced0",
-];
-function Avatar({ name, index = 0, small = false }) {
-  return (
-    <span
-      className={"avatar " + (small ? "small" : "")}
-      style={{ background: colors[index % 6] }}
-    >
-      {initials(name)}
-    </span>
-  );
+function Avatar({ name, small = false }) {
+  return <PokemonSprite name={name} small={small} />;
 }
 function FieldSelect({ label, value, onChange, values }) {
   return (
@@ -151,13 +129,14 @@ function App() {
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
     [tab, setTab] = useState("matchups"),
-    [mode, setMode] = useState("outgoing"),
+    [mode, setMode] = useState("both"),
     [query, setQuery] = useState(""),
     [selected, setSelected] = useState(null),
     [member, setMember] = useState(0),
     [modal, setModal] = useState(null),
     [conditions, setConditions] = useState(false),
     [quickControls, setQuickControls] = useState(false),
+    [quickCalc, setQuickCalc] = useState(null),
     [limit, setLimit] = useState(20),
     [gapsOnly, setGapsOnly] = useState(false),
     [sort, setSort] = useState("usage");
@@ -175,7 +154,10 @@ function App() {
         if (s.updatedAt && s.updatedAt !== last) {
           last = s.updatedAt;
           const d = await api("data");
-          if (alive) setData(d);
+          if (alive) {
+            setData(d);
+            setSelected(null);
+          }
         }
       } catch (e) {
         if (alive) setError(e.message);
@@ -219,6 +201,24 @@ function App() {
       c.abort();
     };
   }, [team, data, options, limit, query]);
+  useEffect(() => {
+    setQuickCalc(null);
+    const opponent = data?.threats
+      .find((t) => t.species === selected)
+      ?.sets.find((s) => s.kind === "estimated");
+    if (!quickControls || !opponent) return;
+    const controller = new AbortController();
+    api(
+      "calculate",
+      { team: team[member] || team[0], opponent, options },
+      controller.signal,
+    )
+      .then(setQuickCalc)
+      .catch((e) => {
+        if (e.name !== "AbortError") setError(e.message);
+      });
+    return () => controller.abort();
+  }, [team, member, selected, options, quickControls, data]);
   const visible = useMemo(
     () =>
       rows
@@ -229,7 +229,7 @@ function App() {
           (r) =>
             !gapsOnly ||
             !r.cells.some(
-              (c) => (mode === "outgoing" ? c.ko : c.survive) >= 0.95,
+              (c) => (mode === "incoming" ? c.survive : c.ko) >= 0.95,
             ),
         )
         .sort((a, b) =>
@@ -355,7 +355,7 @@ function App() {
             </strong>
           </div>
           <span className="format-badge">
-            POKÉMON CHAMPIONS <span>{data?.format || "M-C"}</span>
+            POKÉMON CHAMPIONS <span>{data?.format || LATEST_METAGAME}</span>
           </span>
         </header>
         <div className={"page " + (tab === "matchups" ? "matrix-page" : "")}>
@@ -384,7 +384,7 @@ function App() {
               onClick={() =>
                 refresh(
                   data?.config || {
-                    format: data?.format || "M-C",
+                    format: data?.format || LATEST_METAGAME,
                     eventIds: data?.selectedEvents?.map((e) => e.id),
                   },
                 )
@@ -464,7 +464,11 @@ function App() {
                         onClick={() => setMember(i)}
                         aria-pressed={member === i}
                       >
-                        <Avatar small name={p.species} index={i} />
+                        <Avatar
+                          small
+                          name={displaySpecies(p, cat?.megaItems)}
+                          index={i}
+                        />
                         <span>
                           <strong>{p.species}</strong>
                           <small>{p.item || "No held item"}</small>
@@ -646,7 +650,12 @@ function App() {
                       onChange={(p) =>
                         setTeam(team.map((x, i) => (i === member ? p : x)))
                       }
-                      title="Selected teammate · quick battle controls"
+                      title={
+                        quickCalc
+                          ? `Battle state vs ${selected} · leading estimated set`
+                          : "Team battle state · choose a matchup for automatic stages"
+                      }
+                      effective={quickCalc?.teamStats}
                     />
                     <QuickField options={options} onChange={setOptions} />
                   </div>
@@ -686,6 +695,12 @@ function App() {
                 </div>
                 <div className="table-toolbar">
                   <div className="segmented">
+                    <button
+                      className={mode === "both" ? "active" : ""}
+                      onClick={() => setMode("both")}
+                    >
+                      ↗ / ↙ Both
+                    </button>
                     <button
                       className={mode === "outgoing" ? "active" : ""}
                       onClick={() => setMode("outgoing")}
@@ -739,9 +754,11 @@ function App() {
                 </div>
                 <div className="table-explainer">
                   <Info size={14} />
-                  {mode === "outgoing"
-                    ? "Damage % + OHKO chance. Color = KO reliability. Ranges span the modeled spreads."
-                    : "Damage % received + survival chance. Color = survival reliability across modeled spreads."}{" "}
+                  {mode === "both"
+                    ? "↗ Dealt / ↙ received. Green = reliable KO or survival. Brighter half = faster; pale halves = variable speed or tie."
+                    : mode === "outgoing"
+                      ? "Damage % + OHKO chance. Color = KO reliability. Ranges span the modeled spreads."
+                      : "Damage % received + survival chance. Color = survival reliability across modeled spreads."}{" "}
                   <strong>Click any cell to inspect.</strong>
                 </div>
                 <div className="matrix-context">
@@ -753,7 +770,7 @@ function App() {
                         : "Entire loaded metagame"}{" "}
                     · {visible.length} rows
                     {gapsOnly
-                      ? ` · no ≥95% ${mode === "outgoing" ? "OHKO" : "survival"} option`
+                      ? ` · no ≥95% ${mode === "incoming" ? "survival" : "OHKO"} option`
                       : ""}
                   </span>
                   <span>
@@ -783,7 +800,11 @@ function App() {
                         {team.map((p, i) => (
                           <th key={i} className={member === i ? "focused" : ""}>
                             <div>
-                              <Avatar small name={p.species} index={i} />
+                              <Avatar
+                                small
+                                name={displaySpecies(p, cat?.megaItems)}
+                                index={i}
+                              />
                               {p.species}
                             </div>
                           </th>
@@ -810,7 +831,16 @@ function App() {
                                 <span className="rank">
                                   {String(ri + 1).padStart(2, "0")}
                                 </span>
-                                <Avatar small name={r.species} index={ri + 2} />
+                                <Avatar
+                                  small
+                                  name={displaySpecies(
+                                    r.sets.find(
+                                      (s) => s.kind === "estimated",
+                                    ) || { species: r.species },
+                                    cat?.megaItems,
+                                  )}
+                                  index={ri + 2}
+                                />
                                 <span>
                                   <strong>{r.species}</strong>
                                   <small>
@@ -829,7 +859,7 @@ function App() {
                             </td>
                             {r.cells.map((c, i) => {
                               const chance =
-                                mode === "outgoing" ? c.ko : c.survive;
+                                mode === "incoming" ? c.survive : c.ko;
                               const damage =
                                 mode === "outgoing" ? c.out : c.incoming;
                               return (
@@ -837,47 +867,19 @@ function App() {
                                   key={i}
                                   className={member === i ? "focused" : ""}
                                 >
-                                  <button
-                                    className={
-                                      "calc-cell " +
-                                      (chance == null
-                                        ? "unknown"
-                                        : chance >= 0.95
-                                          ? "good"
-                                          : chance >= 0.5
-                                            ? "mixed"
-                                            : "bad")
-                                    }
-                                    aria-label={`${team[i]?.species || "Updating teammate"} vs ${r.species}: ${damage ? `${num(damage.minPercent)} to ${num(damage.maxPercent)} percent damage` : "no damaging move"}, ${pct(chance)} ${mode === "outgoing" ? "OHKO" : "survival"}. Open matchup.`}
-                                    aria-expanded={
+                                  <MatrixCell
+                                    cell={c}
+                                    mode={mode}
+                                    own={team[i]?.species || "Updating"}
+                                    foe={r.species}
+                                    expanded={
                                       selected === r.species && member === i
                                     }
                                     onClick={() => {
                                       setSelected(r.species);
                                       setMember(i);
                                     }}
-                                  >
-                                    <strong className="cell-damage">
-                                      {damage
-                                        ? `${num(damage.minPercent)}–${num(damage.maxPercent)}%`
-                                        : "—"}
-                                    </strong>
-                                    <small>
-                                      {damage?.move || "No damaging move"}
-                                    </small>
-                                    <span className="cell-probability">
-                                      {pct(chance)}{" "}
-                                      {mode === "outgoing" ? "OHKO" : "survive"}
-                                    </span>
-                                    <span className="cell-meter">
-                                      <i
-                                        style={{
-                                          width: `${(chance || 0) * 100}%`,
-                                        }}
-                                      />
-                                    </span>
-                                    <PaceBadge cell={c} />
-                                  </button>
+                                  />
                                 </td>
                               );
                             })}
@@ -895,6 +897,7 @@ function App() {
                                   key={`${r.species}-${member}`}
                                   team={team[member]}
                                   threat={r}
+                                  speedRange={r.cells[member]?.speedRange}
                                   options={options}
                                   onOptions={setOptions}
                                   cat={cat}
@@ -1138,7 +1141,7 @@ function ImportModal({ close, onImport, current }) {
     </Modal>
   );
 }
-function SetEditor({ value, onChange, cat, compact = false }) {
+function SetEditor({ value, onChange, cat, compact = false, effective }) {
   const p = value;
   const update = (key, v) => onChange({ ...p, [key]: v });
   const total = keys.reduce((s, k) => s + (p.sp?.[k] || 0), 0);
@@ -1267,14 +1270,24 @@ function SetEditor({ value, onChange, cat, compact = false }) {
                 type="number"
                 min="-6"
                 max="6"
-                value={p.boosts?.[k] || 0}
+                value={displayedStage(p, effective, k)}
                 onChange={(e) =>
-                  update("boosts", { ...p.boosts, [k]: Number(e.target.value) })
+                  update("stageOverrides", {
+                    ...p.stageOverrides,
+                    [k]: Number(e.target.value),
+                  })
                 }
               />
             </label>
           ))}
         </div>
+        <p className="tiny-note">
+          {effective
+            ? "Stages include automatic abilities and items for this matchup."
+            : "Automatic stages depend on the opponent; open a matchup to inspect them."}{" "}
+          Editing a stage sets its final value. Reset stages in the quick
+          controls to restore automatic behavior.
+        </p>
         <label className="check">
           <input
             type="checkbox"
@@ -1391,21 +1404,22 @@ function EditModal({ set, cat, close, onSave, onRemove }) {
     </Modal>
   );
 }
-function Matchup({ team, threat, options, onOptions, cat, onApply }) {
-  const [setId, setSetId] = useState(threat.sets[0]?.id),
-    [opponent, setOpponent] = useState(threat.sets[0]),
+function Matchup({
+  team,
+  threat,
+  options,
+  onOptions,
+  cat,
+  onApply,
+  speedRange,
+}) {
+  const [opponent, setOpponent] = useState(threat.sets[0]),
     [candidate, setCandidate] = useState(structuredClone(team)),
     [calc, setCalc] = useState(null),
     [error, setError] = useState(""),
     [direction, setDirection] = useState("outgoing"),
-    [move, setMove] = useState(team.moves[0]),
-    [edit, setEdit] = useState(false),
-    [stat, setStat] = useState("at"),
-    [funding, setFunding] = useState("sp"),
-    [target, setTarget] = useState(1),
-    [sweep, setSweep] = useState(null),
-    [sweeping, setSweeping] = useState(false),
-    [sweepError, setSweepError] = useState("");
+    [move, setMove] = useState(""),
+    [edit, setEdit] = useState(false);
   useEffect(() => {
     setCandidate(structuredClone(team));
   }, [team]);
@@ -1432,11 +1446,15 @@ function Matchup({ team, threat, options, onOptions, cat, onApply }) {
       clearTimeout(timer);
     };
   }, [candidate, opponent, options]);
-  useEffect(() => {
-    setSweep(null);
-  }, [candidate, opponent, options, stat, funding, direction, move, target]);
+
   const current =
-    calc?.[direction]?.find((x) => x.move === move) || calc?.[direction]?.[0];
+    calc?.[direction]?.find((x) => x.move === move) ||
+    [...(calc?.[direction] || [])]
+      .filter((x) => !x.support)
+      .sort(
+        (a, b) => (b.ko ?? -1) - (a.ko ?? -1) || b.maxPercent - a.maxPercent,
+      )[0] ||
+    calc?.[direction]?.[0];
   if (!opponent)
     return (
       <div className="detail-empty">
@@ -1449,8 +1467,20 @@ function Matchup({ team, threat, options, onOptions, cat, onApply }) {
         <div>
           <span className="eyebrow">03 / MATCHUP LAB</span>
           <h3>
+            <PokemonSprite
+              name={
+                calc?.teamStats.name ||
+                displaySpecies(candidate, cat?.megaItems)
+              }
+            />
             {candidate.species}
             <span>vs.</span>
+            <PokemonSprite
+              name={
+                calc?.opponentStats.name ||
+                displaySpecies(opponent, cat?.megaItems)
+              }
+            />
             {opponent.species}
           </h3>
         </div>
@@ -1462,52 +1492,13 @@ function Matchup({ team, threat, options, onOptions, cat, onApply }) {
           </span>
         </div>
       </div>
-      <div className="set-selector">
-        <label className="field-label">
-          Opponent set
-          <select
-            value={setId || ""}
-            onChange={(e) => {
-              setSetId(e.target.value);
-              setOpponent(
-                structuredClone(
-                  threat.sets.find((s) => s.id === e.target.value),
-                ),
-              );
-            }}
-          >
-            <optgroup label="In-game spread + modal choices (estimated)">
-              {threat.sets
-                .filter((s) => s.kind === "estimated")
-                .map((s) => (
-                  <option value={s.id} key={s.id}>
-                    {s.label} · {s.weight}% spread usage · {s.nature}
-                  </option>
-                ))}
-            </optgroup>
-            <optgroup label="Published full sets (unweighted)">
-              {threat.sets
-                .filter((s) => s.kind === "published")
-                .map((s) => (
-                  <option value={s.id} key={s.id}>
-                    {s.label}
-                  </option>
-                ))}
-            </optgroup>
-          </select>
-        </label>
-        <a href={opponent.source} target="_blank" rel="noreferrer">
-          View source
-          <ExternalLink size={14} />
-        </a>
-        <button
-          className="secondary small-button"
-          onClick={() => setEdit(!edit)}
-        >
-          <Settings2 size={14} />
-          {edit ? "Hide editors" : "Edit both sets"}
-        </button>
-      </div>
+      <SetPicker
+        threat={threat}
+        opponent={opponent}
+        onSelect={(set) => {
+          setOpponent(set);
+        }}
+      />
       <div className="set-summary">
         <span>{opponent.item || "No item"}</span>
         <span>{opponent.ability}</span>
@@ -1522,11 +1513,36 @@ function Matchup({ team, threat, options, onOptions, cat, onApply }) {
         </span>
       </div>
       <p className="sample-note">
+        {opponent.spreadNote && <>{opponent.spreadNote} </>}
         Modeled spreads cover <strong>{num(threat.spreadCoverage)}%</strong> of
         reported spread usage. Remaining spreads are not modeled. Published sets
         have no ladder frequency. KO chances below are conditional on the
         selected set and the move connecting.
       </p>
+      {calc && (
+        <div className="compact-speed">
+          <Activity size={14} />
+          <strong>
+            Speed {calc.teamStats.sp} vs {calc.opponentStats.sp}
+          </strong>
+          <span>
+            {calc.teamStats.sp === calc.opponentStats.sp
+              ? "Tie"
+              : calc.teamStats.sp > calc.opponentStats.sp
+                ? "You faster"
+                : "Foe faster"}
+          </span>
+          {speedRange && (
+            <span>
+              Modeled foe range {speedRange.opponent[0]}–
+              {speedRange.opponent[1]} · modal nature
+            </span>
+          )}
+          {options.trickRoom && (
+            <span>Trick Room reverses equal-priority order</span>
+          )}
+        </div>
+      )}
       <div className="quick-matchup">
         <QuickSet
           value={candidate}
@@ -1559,12 +1575,21 @@ function Matchup({ team, threat, options, onOptions, cat, onApply }) {
           </span>
         </div>
       )}
+      <button
+        className="secondary edit-inline"
+        onClick={() => setEdit(!edit)}
+        aria-expanded={edit}
+      >
+        <Settings2 size={14} />
+        {edit ? "Hide set editors" : "Edit these sets"}
+      </button>
       {edit && cat && (
         <div className="dual-edit">
           <section>
             <h4>Your candidate</h4>
             <SetEditor
               value={candidate}
+              effective={calc?.teamStats}
               onChange={setCandidate}
               cat={cat}
               compact
@@ -1577,6 +1602,7 @@ function Matchup({ team, threat, options, onOptions, cat, onApply }) {
             <h4>Opponent scenario</h4>
             <SetEditor
               value={opponent}
+              effective={calc?.opponentStats}
               onChange={setOpponent}
               cat={cat}
               compact
@@ -1587,7 +1613,6 @@ function Matchup({ team, threat, options, onOptions, cat, onApply }) {
       {error && <div className="alert">{error}</div>}
       {calc && (
         <>
-          <InitiativePanel calc={calc} trickRoom={options.trickRoom} />
           <div className="move-panels">
             {["outgoing", "incoming"].map((dir) => (
               <section key={dir}>
@@ -1619,17 +1644,19 @@ function Matchup({ team, threat, options, onOptions, cat, onApply }) {
                     onClick={() => {
                       setDirection(dir);
                       setMove(m.move);
-                      setStat(
-                        dir === "incoming"
-                          ? "hp"
-                          : m.category === "Special"
-                            ? "sa"
-                            : "at",
-                      );
                     }}
                   >
                     <div>
-                      <strong>{m.move}</strong>
+                      <strong>
+                        {m.move}
+                        {m.priority !== 0 && (
+                          <small className="move-priority">
+                            {" "}
+                            · priority {m.priority > 0 ? "+" : ""}
+                            {m.priority}
+                          </small>
+                        )}
+                      </strong>
                       <span>
                         {m.support
                           ? "Status move"
@@ -1695,161 +1722,18 @@ function Matchup({ team, threat, options, onOptions, cat, onApply }) {
                 </p>
               ))}
             </div>
-            <div className="speed-card">
-              <Activity size={19} />
-              <span>Effective speed</span>
-              <strong>
-                {calc.teamStats.sp}
-                <b> / </b>
-                {calc.opponentStats.sp}
-              </strong>
-              <small>
-                {calc.teamStats.sp === calc.opponentStats.sp
-                  ? "Speed tie"
-                  : calc.teamStats.sp > calc.opponentStats.sp
-                    ? "Your Pokémon is faster"
-                    : "Opponent is faster"}
-              </small>
-              <p>
-                Raw speed comparison. See the initiative panel for priority and
-                Trick Room.
-              </p>
-            </div>
           </div>
-          <section className="optimizer">
-            <div className="optimizer-heading">
-              <div>
-                <span className="eyebrow">04 / SPREAD EXPLORER</span>
-                <h4>Find the points that change the roll.</h4>
-              </div>
-              <span className="tag">Legal 66-point budget</span>
-            </div>
-            <p>
-              Scan {direction === "outgoing" ? "KO" : "survival"} chance for{" "}
-              <strong>{current?.move}</strong>. Uses unallocated points first,
-              then takes any extra from your funding stat.
-            </p>
-            <div className="optimizer-controls">
-              <FieldSelect
-                label="Invest in"
-                value={stat}
-                values={keys}
-                onChange={setStat}
-              />
-              <FieldSelect
-                label="Fund from"
-                value={funding}
-                values={keys}
-                onChange={setFunding}
-              />
-              <label className="field-label">
-                Target chance
-                <select
-                  value={target}
-                  onChange={(e) => setTarget(Number(e.target.value))}
-                >
-                  <option value="1">100% · guaranteed</option>
-                  <option value="0.9375">93.75%</option>
-                  <option value="0.875">87.5%</option>
-                  <option value="0.75">75%</option>
-                  <option value="0.5">50%</option>
-                </select>
-              </label>
-              <button
-                className="primary"
-                disabled={sweeping || current?.support || stat === funding}
-                onClick={async () => {
-                  setSweeping(true);
-                  setSweepError("");
-                  try {
-                    setSweep(
-                      await api("sweep", {
-                        team: candidate,
-                        opponent,
-                        options,
-                        stat,
-                        funding,
-                        direction,
-                        move: current.move,
-                        threshold: target,
-                      }),
-                    );
-                  } catch (e) {
-                    setSweepError(e.message);
-                  } finally {
-                    setSweeping(false);
-                  }
-                }}
-              >
-                <Activity size={15} />
-                {sweeping ? "Scanning…" : "Explore breakpoints"}
-              </button>
-            </div>
-            {sweepError && <div className="alert">{sweepError}</div>}
-            {sweep && (
-              <>
-                <div className="sweep-chart">
-                  <div className="y-label">
-                    100%<span>50%</span>0%
-                  </div>
-                  <div className="sweep-bars">
-                    {sweep.curve.map((p) => (
-                      <button
-                        key={p.value}
-                        title={`${p.value} ${stat.toUpperCase()} / ${p.funding} ${funding.toUpperCase()}: ${pct(p.chance)} · ${num(p.min)}–${num(p.max)}% damage`}
-                        onClick={() => setCandidate({ ...candidate, sp: p.sp })}
-                      >
-                        <i
-                          className={p.chance >= target ? "meets" : ""}
-                          style={{
-                            height: `${Math.max(2, (p.chance || 0) * 100)}%`,
-                          }}
-                        />
-                        <span>{p.value}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div className="breakpoint">
-                  {sweep.minimum ? (
-                    <>
-                      <Target size={19} />
-                      <span>
-                        <strong>
-                          {sweep.minimum.value} {stat.toUpperCase()} SP
-                        </strong>{" "}
-                        reaches {pct(sweep.minimum.chance)}{" "}
-                        {direction === "outgoing" ? "KO" : "survival"} chance.{" "}
-                        {sweep.minimum.funding} {funding.toUpperCase()} SP
-                        remains; {sweep.minimum.total}/66 allocated.
-                      </span>
-                      <button
-                        className="secondary"
-                        onClick={() => {
-                          const p = { ...candidate, sp: sweep.minimum.sp };
-                          setCandidate(p);
-                          onApply(p);
-                        }}
-                      >
-                        Apply spread
-                        <Check size={14} />
-                      </button>
-                    </>
-                  ) : (
-                    <span>
-                      No legal point allocation along this path reaches{" "}
-                      {pct(target)}.
-                    </span>
-                  )}
-                </div>
-                <p className="tiny-note">
-                  This is a one-stat budget path, not a global EV optimizer. The
-                  rest of your spread stays fixed except the funding stat.
-                  Clicking a bar previews that spread.
-                </p>
-              </>
-            )}
-          </section>
+          <InvestmentExplorer
+            team={candidate}
+            opponent={opponent}
+            options={options}
+            direction={direction}
+            move={current}
+            onApply={(p) => {
+              setCandidate(p);
+              onApply(p);
+            }}
+          />
           <details className="distribution-details">
             <summary>Inspect the underlying in-game distributions</summary>
             <div className="distribution-grid">
@@ -1876,15 +1760,21 @@ function Matchup({ team, threat, options, onOptions, cat, onApply }) {
   );
 }
 function Sources({ data, status, onRefresh }) {
-  const [format, setFormat] = useState(data?.format || "M-C"),
+  const [format, setFormat] = useState(data?.format || LATEST_METAGAME),
     [limit, setLimit] = useState(data?.config?.limit || 40),
     [spreadLimit, setSpreadLimit] = useState(data?.config?.spreadLimit || 8),
     [publishedLimit, setPublishedLimit] = useState(
-      data?.config?.publishedLimit || 24,
+      data?.config?.publishedLimit || 1000,
     ),
-    [events, setEvents] = useState(data?.selectedEvents.map((e) => e.id) || []);
+    [events, setEvents] = useState(data?.selectedEvents.map((e) => e.id) || []),
+    [autoEvents, setAutoEvents] = useState(!data?.config?.eventIds);
   useEffect(() => {
-    if (data) setEvents(data.selectedEvents.map((e) => e.id));
+    if (data) {
+      setEvents(data.selectedEvents.map((e) => e.id));
+      setFormat(data.format);
+      setPublishedLimit(data.config.publishedLimit);
+      setAutoEvents(!data.config.eventIds);
+    }
   }, [data]);
   return (
     <div className="sources">
@@ -1921,10 +1811,16 @@ function Sources({ data, status, onRefresh }) {
         <h2>Choose the metagame sample</h2>
         <div className="source-controls">
           <FieldSelect
-            label="Published team format"
+            label="Metagame (M-C is latest)"
             value={format}
             values={["M-C", "M-B"]}
-            onChange={setFormat}
+            onChange={(value) => {
+              setFormat(value);
+              setEvents(
+                metagameEvents(data?.events || [], value).map((e) => e.id),
+              );
+              setAutoEvents(true);
+            }}
           />
           <label className="field-label">
             Metagame coverage
@@ -1962,11 +1858,11 @@ function Sources({ data, status, onRefresh }) {
           </label>
           <button
             className="primary"
-            disabled={status.running || events.length > 8}
+            disabled={status.running}
             onClick={() =>
               onRefresh({
                 format,
-                eventIds: events,
+                eventIds: autoEvents ? null : events,
                 limit,
                 spreadLimit,
                 publishedLimit,
@@ -1978,24 +1874,25 @@ function Sources({ data, status, onRefresh }) {
           </button>
         </div>
         <p>
-          Select up to eight events. Choose events in the same regulation; the
-          app does not infer regulation changes from event names. In-game ladder
-          data always reflects its latest capture, including when viewing
-          historical M-B teams.
+          All published events dated within the selected regulation are selected
+          by default. Untick events for a custom sample. In-game ladder data
+          always uses its latest capture, including when viewing a historical
+          metagame.
         </p>
         <div className="event-list">
-          {data?.events.map((e) => (
+          {metagameEvents(data?.events || [], format).map((e) => (
             <label key={e.id}>
               <input
                 type="checkbox"
                 checked={events.includes(e.id)}
-                onChange={(x) =>
+                onChange={(x) => {
+                  setAutoEvents(false);
                   setEvents(
                     x.target.checked
                       ? [...events, e.id]
                       : events.filter((id) => id !== e.id),
-                  )
-                }
+                  );
+                }}
               />
               {e.name}
             </label>
@@ -2075,15 +1972,16 @@ function Published({ data, onImport, busy }) {
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Search players, teams, or events…"
+          placeholder="Search Pokémon, players, or events…"
         />
       </label>
       <div className="published-grid">
         {data?.published
           .filter((t) =>
-            (t.title + " " + t.event).toLowerCase().includes(q.toLowerCase()),
+            (t.title + " " + t.event + " " + (t.members || []).join(" "))
+              .toLowerCase()
+              .includes(q.toLowerCase()),
           )
-          .slice(0, 100)
           .map((t) => (
             <article key={t.id}>
               <div className="published-meta">
@@ -2091,6 +1989,20 @@ function Published({ data, onImport, busy }) {
                 <span>{t.date}</span>
               </div>
               <h3>{t.title}</h3>
+              {t.members?.length ? (
+                <div className="team-preview" aria-label="Team Pokémon preview">
+                  {t.members.map((name, i) => (
+                    <figure key={`${name}-${i}`} title={name}>
+                      <PokemonSprite name={name} />
+                      <figcaption>{name.replace("Mega ", "M. ")}</figcaption>
+                    </figure>
+                  ))}
+                </div>
+              ) : (
+                <div className="preview-missing">
+                  Team preview unavailable in the source sheet.
+                </div>
+              )}
               <p>
                 {t.event || "Community team"} ·{" "}
                 {t.placing || "No result listed"}
@@ -2121,7 +2033,7 @@ function Published({ data, onImport, busy }) {
       </div>
       {!data && <p>Teams will appear when the data refresh completes.</p>}
       <p className="tiny-note">
-        Showing up to 100 matching teams. Search to narrow the library. Teams
+        All matching teams are shown. Search to narrow the library. Teams
         without spreads import with 0 SP and a warning.
       </p>
     </section>

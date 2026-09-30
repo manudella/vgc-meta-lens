@@ -45,6 +45,16 @@ vm.runInContext(
   ctx,
 );
 
+// In the pinned NCP pipeline, checkBattleBond is the last entry-effect step,
+// immediately before modified stats, speed and damage are computed. Keep the
+// upstream scripts untouched; apply explicit final-stage edits at this boundary.
+const checkBattleBond = ctx.checkBattleBond;
+ctx.checkBattleBond = (p) => {
+  checkBattleBond(p);
+  p.automaticBoosts = { ...p.boosts };
+  Object.assign(p.boosts, p.stageOverrides);
+};
+
 export const STATS = ["hp", "at", "df", "sa", "sd", "sp"];
 export const LABELS = ["HP", "Atk", "Def", "SpA", "SpD", "Spe"];
 export const dex = ctx.POKEDEX_CHAMPIONS;
@@ -106,6 +116,15 @@ export function validateSet(set) {
   for (const value of Object.values(set.boosts || {}))
     if (!Number.isInteger(value) || Math.abs(value) > 6)
       throw new Error("Stat stages must be integers from −6 to +6.");
+  for (const [stat, value] of Object.entries(set.stageOverrides || {}))
+    if (
+      !STATS.slice(1).includes(stat) ||
+      !Number.isInteger(value) ||
+      Math.abs(value) > 6
+    )
+      throw new Error(
+        "Final stat stages must use valid stats and integers from −6 to +6.",
+      );
   if (
     set.hpPercent != null &&
     (!Number.isFinite(set.hpPercent) ||
@@ -154,6 +173,7 @@ export function pokemon(set) {
     boosts: Object.fromEntries(
       STATS.slice(1).map((k) => [k, set.boosts?.[k] || 0]),
     ),
+    stageOverrides: { ...set.stageOverrides },
     sps: sp,
     evs: Object.fromEntries(STATS.map((k) => [k, Math.max(0, sp[k] * 8 - 4)])),
     ivs: Object.fromEntries(STATS.map((k) => [k, 31])),
@@ -227,6 +247,21 @@ function fieldFor(options, a, b) {
   for (const p of order) {
     weather = weatherAbilities[p.ability] || weather;
     terrain = terrainAbilities[p.ability] || terrain;
+  }
+  // Only fill an otherwise unset automatic field. Explicit choices and entry
+  // abilities remain authoritative when two terrain assumptions conflict.
+  const moveTerrains = {
+    "Expanding Force": "Psychic",
+    "Rising Voltage": "Electric",
+    "Grassy Glide": "Grassy",
+    "Misty Explosion": "Misty",
+  };
+  if (!terrain && options.autoMoveConditions !== false) {
+    terrain =
+      [a, b]
+        .flatMap((p) => p.moves)
+        .map((m) => moveTerrains[m.name])
+        .find(Boolean) || "";
   }
   if (options.weather !== undefined && options.weather !== "Auto")
     weather = options.weather;
@@ -499,14 +534,19 @@ export function calculatePair(team, opponent, options = {}) {
     if (p.name.startsWith("Mega "))
       effects.push({ side, text: `${p.name} · ${p.ability}` });
     for (const k of STATS.slice(1))
-      if (p.boosts[k] !== initial[i].boosts[k])
+      if (p.automaticBoosts[k] !== initial[i].boosts[k])
         effects.push({
           side,
-          text: `${LABELS[STATS.indexOf(k)]} ${p.boosts[k] >= 0 ? "+" : ""}${p.boosts[k]} after automatic abilities / items`,
+          text: `${LABELS[STATS.indexOf(k)]} ${p.automaticBoosts[k] >= 0 ? "+" : ""}${p.automaticBoosts[k]} from automatic abilities / items`,
         });
+    for (const [k, value] of Object.entries(p.stageOverrides))
+      effects.push({
+        side,
+        text: `${LABELS[STATS.indexOf(k)]} ${value >= 0 ? "+" : ""}${value} final stage · manual override`,
+      });
     if (initial[i].ability === "Intimidate" && (i ? b : a).abilityOn) {
       const target = i ? a : b;
-      if (target.boosts.at === initial[i ? 0 : 1].boosts.at)
+      if (target.automaticBoosts.at === initial[i ? 0 : 1].boosts.at)
         effects.push({
           side: i ? "team" : "opponent",
           text: `Intimidate prevented / neutralized · ${target.item === "Clear Amulet" ? "Clear Amulet" : target.ability}`,
@@ -523,6 +563,7 @@ export function calculatePair(team, opponent, options = {}) {
       ...a.stats,
       name: a.name,
       boosts: a.boosts,
+      automaticBoosts: a.automaticBoosts,
       ability: a.ability,
     },
     opponentStats: {
@@ -530,6 +571,7 @@ export function calculatePair(team, opponent, options = {}) {
       ...b.stats,
       name: b.name,
       boosts: b.boosts,
+      automaticBoosts: b.automaticBoosts,
       ability: b.ability,
     },
     weather: field.getWeather(),
@@ -543,5 +585,6 @@ export function catalog() {
     natures: Object.keys(natures),
     items: ctx.ITEMS_CHAMPIONS,
     abilities: ctx.ABILITIES_CHAMPIONS,
+    megaItems: Object.fromEntries(megaByItem),
   };
 }

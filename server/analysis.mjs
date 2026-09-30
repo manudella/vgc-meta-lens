@@ -23,6 +23,7 @@ export function analyze(team, threats, options = {}) {
               outgoingMoves: pair.outgoing,
               incomingMoves: pair.incoming,
               orders: pair.orders,
+              speeds: [pair.teamStats.sp, pair.opponentStats.sp],
             };
           } catch (e) {
             return { setId: set.id, error: e.message, weight: set.weight };
@@ -90,7 +91,7 @@ export function analyze(team, threats, options = {}) {
         }
         return {
           details: details.map(
-            ({ outgoingMoves, incomingMoves, orders, ...d }) => d,
+            ({ outgoingMoves, incomingMoves, orders, speeds, ...d }) => d,
           ),
           coverage: total,
           ko: out ? out.ko : total ? 0 : null,
@@ -106,6 +107,18 @@ export function analyze(team, threats, options = {}) {
           outgoingMoves,
           incomingMoves,
           pace,
+          speedRange: valid.length
+            ? {
+                team: [
+                  Math.min(...valid.map((d) => d.speeds[0])),
+                  Math.max(...valid.map((d) => d.speeds[0])),
+                ],
+                opponent: [
+                  Math.min(...valid.map((d) => d.speeds[1])),
+                  Math.max(...valid.map((d) => d.speeds[1])),
+                ],
+              }
+            : null,
         };
       }),
     };

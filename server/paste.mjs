@@ -15,7 +15,10 @@ const aliases = {
   speed: "sp",
   sp: "sp",
 };
-export function parsePaste(text, { allowMissing = false } = {}) {
+export function parsePaste(
+  text,
+  { allowMissing = false, spreadFormat = "auto" } = {},
+) {
   if (typeof text !== "string" || text.length > 80000)
     throw new Error("Paste must be text under 80 KB.");
   const blocks = text
@@ -46,11 +49,13 @@ export function parsePaste(text, { allowMissing = false } = {}) {
     for (const line of lines) {
       if (line.startsWith("- ")) set.moves.push(line.slice(2));
       else if (line.startsWith("Ability:")) set.ability = line.slice(8).trim();
-      else if (line.endsWith(" Nature"))
-        set.nature = line.replace(" Nature", "");
-      else if (/^(EVs|SPs|Stat Points):/i.test(line)) {
-        const isEV = line.startsWith("EVs:");
+      else if (/ Nature$/i.test(line)) {
+        const nature = line.replace(/ Nature$/i, "").toLowerCase();
+        set.nature = nature.charAt(0).toUpperCase() + nature.slice(1);
+      } else if (/^(EVs|SPs|Stat Points):/i.test(line)) {
+        const isEV = /^EVs:/i.test(line);
         let evTotal = 0;
+        const allocation = {};
         for (const part of line.split(":").slice(1).join(":").split("/")) {
           const match = part.trim().match(/^(\d+)\s+([a-zA-Z. ]+)$/);
           if (!match) throw new Error(`Invalid spread: ${line}`);
@@ -62,11 +67,23 @@ export function parsePaste(text, { allowMissing = false } = {}) {
             throw new Error(
               "EVs may not exceed 252 per stat. Use SPs: for Champions stat points.",
             );
-          set.sp[k] = isEV
-            ? Math.floor((31 + Math.floor(value / 4)) / 2) - 15
-            : value;
+          allocation[k] = value;
         }
         if (isEV && evTotal > 510) throw new Error("EV total exceeds 510.");
+        const isPoints =
+          !isEV ||
+          spreadFormat === "sp" ||
+          (spreadFormat === "auto" &&
+            evTotal <= 66 &&
+            Object.values(allocation).every((v) => v <= 32));
+        for (const [k, value] of Object.entries(allocation))
+          set.sp[k] = isPoints
+            ? value
+            : Math.floor((31 + Math.floor(value / 4)) / 2) - 15;
+        set.spreadEncoding = isPoints ? "Champions SP" : "Converted EVs";
+        if (isEV && isPoints)
+          set.spreadNote =
+            "This paste labels Champions stat points as EVs; values were kept as SP (0–32 per stat, 66 total).";
         set.spreadKnown = true;
       } else if (
         line.startsWith("IVs:") &&

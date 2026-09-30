@@ -92,6 +92,24 @@ app.post("/api/analyze", async (req, res) => {
     res.json(rows);
   }
 });
+app.post("/api/investment", async (req, res) => {
+  const worker = new Worker(new URL("./analysis-worker.mjs", import.meta.url), {
+    workerData: { task: "investment", input: req.body },
+  });
+  res.on("close", () => {
+    void worker.terminate();
+  });
+  const result = await new Promise((resolve, reject) => {
+    worker.once("message", (r) =>
+      r.error ? reject(new Error(r.error)) : resolve(r.rows),
+    );
+    worker.once("error", reject);
+    worker.once("exit", (code) => {
+      if (code !== 0) reject(new Error("Investment scan cancelled."));
+    });
+  });
+  if (!res.destroyed) res.json(result);
+});
 app.post("/api/calculate", (req, res) =>
   res.json(calculatePair(req.body.team, req.body.opponent, req.body.options)),
 );
@@ -109,9 +127,19 @@ app.listen(port, "127.0.0.1", () => {
   console.log(`Meta Lens running at http://127.0.0.1:${port}`);
   if (
     !state.data ||
+    state.data.version !== 2 ||
     Date.now() - Date.parse(state.data.updatedAt) > 24 * 3600 * 1000
   )
-    void refresh(state.data?.config);
+    void refresh(
+      state.data?.version === 2
+        ? state.data.config
+        : {
+            format: "M-C",
+            limit: state.data?.config?.limit || 40,
+            spreadLimit: state.data?.config?.spreadLimit || 8,
+            publishedLimit: 1000,
+          },
+    );
   if (process.argv.includes("--open")) {
     const url = `http://127.0.0.1:${port}`;
     if (process.platform === "win32")

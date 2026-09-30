@@ -5,6 +5,13 @@ import { load } from "cheerio";
 import { parse } from "csv-parse/sync";
 import { STATS, baseName, speciesName, validateSet } from "./engine.mjs";
 import { parsePaste } from "./paste.mjs";
+import {
+  METAGAMES,
+  LATEST_METAGAME,
+  eventDate,
+  eventMetagame,
+  metagameEvents,
+} from "../shared/metagames.mjs";
 
 const cacheDir = new URL("../.cache/", import.meta.url);
 const SHEET = "1axlwmzPA49rYkqXh7zHvAtSP-TKbM0ijGYBPRflLSWw";
@@ -70,7 +77,11 @@ export async function getEvents() {
       name: $(el).text().replace(/\s+/g, " ").trim(),
     }))
     .filter((x) => x.id)
-    .slice(0, 30);
+    .map((e) => ({
+      ...e,
+      date: eventDate(e.name),
+      metagame: eventMetagame(eventDate(e.name)),
+    }));
 }
 export function tournamentUsage(events) {
   const counts = new Map();
@@ -133,11 +144,20 @@ export function ladderSets(data, spreadLimit = 8) {
     });
 }
 export async function getPublished(format = "M-C") {
-  const gid = format === "M-B" ? "1458357160" : "2001945654";
+  const gid = METAGAMES[format]?.gid;
+  if (!gid) throw new Error("Unsupported metagame.");
   const result = await cachedFetch(
     `https://docs.google.com/spreadsheets/d/${SHEET}/export?format=csv&gid=${gid}`,
   );
-  const rows = parse(result.text, { relax_column_count: true, bom: true });
+  return {
+    teams: publishedTeamsFromCsv(result.text),
+    source: `${sourceLinks.teams}?gid=${gid}`,
+    stale: result.stale,
+    at: result.at,
+  };
+}
+export function publishedTeamsFromCsv(text) {
+  const rows = parse(text, { relax_column_count: true, bom: true });
   const header = rows.findIndex((row) => row[0] === "Team ID");
   if (header < 0) throw new Error("VGCPastes sheet header changed.");
   const h = rows[header],
@@ -154,14 +174,20 @@ export async function getPublished(format = "M-C") {
       event: row[ix("Tournament / Event")],
       placing: row[ix("Rank")],
       owner: row[ix("Full Name")],
+      members:
+        ix("Pokemon Text for Copypasta") < 0
+          ? []
+          : row
+              .slice(
+                ix("Pokemon Text for Copypasta"),
+                ix("Pokemon Text for Copypasta") + 6,
+              )
+              .map((name) => name.trim())
+              .filter(Boolean)
+              .map((name) => speciesName(name) || name),
     }))
     .filter((t) => /^https:\/\/pokepast\.es\/[a-f0-9]{16}$/.test(t.url));
-  return {
-    teams,
-    source: `${sourceLinks.teams}?gid=${gid}`,
-    stale: result.stale,
-    at: result.at,
-  };
+  return teams;
 }
 export const state = {
   running: false,
@@ -176,14 +202,31 @@ export async function restore() {
     state.data = JSON.parse(
       await fs.readFile(new URL("dataset.json", cacheDir), "utf8"),
     );
+    // Upgrade cached datasets without refetching every ladder set or Poképaste.
+    if (state.data.published?.some((t) => !Array.isArray(t.members))) {
+      const indexed = new Map(
+        (await getPublished(state.data.format)).teams.map((t) => [
+          t.id,
+          t.members,
+        ]),
+      );
+      state.data.published = state.data.published.map((t) => ({
+        ...t,
+        members: indexed.get(t.id) || [],
+      }));
+      await fs.writeFile(
+        new URL("dataset.json", cacheDir),
+        JSON.stringify(state.data),
+      );
+    }
   } catch {}
 }
 export async function refresh({
-  format = "M-C",
+  format = LATEST_METAGAME,
   eventIds,
   limit = 40,
   spreadLimit = 8,
-  publishedLimit = 24,
+  publishedLimit = 1000,
 } = {}) {
   if (state.running) return;
   if (!["M-B", "M-C"].includes(format)) throw new Error("Choose M-B or M-C.");
@@ -197,10 +240,10 @@ export async function refresh({
   if (
     eventIds &&
     (!Array.isArray(eventIds) ||
-      eventIds.length > 8 ||
+      eventIds.length > 500 ||
       eventIds.some((x) => !/^\d{7}$/.test(x)))
   )
-    throw new Error("Select up to eight valid events.");
+    throw new Error("Select valid events.");
   state.running = true;
   state.error = null;
   state.done = 0;
@@ -214,15 +257,7 @@ export async function refresh({
     } catch (e) {
       warnings.push(`Event discovery unavailable: ${e.message}`);
     }
-    // Regulation-era boundaries are explicit; users can override the event selection.
-    const defaultIds = events
-      .filter((e) =>
-        format === "M-C"
-          ? Number(e.id) >= 192
-          : Number(e.id) >= 181 && Number(e.id) <= 191,
-      )
-      .slice(0, 3)
-      .map((e) => e.id);
+    const defaultIds = metagameEvents(events, format).map((e) => e.id);
     const selected = eventIds || defaultIds;
     const tournaments = [];
     for (const id of selected) {
@@ -345,7 +380,10 @@ export async function refresh({
     let publishedLoaded = 0;
     for (const team of published.teams
       .filter((t) => t.hasSpread)
-      .slice(0, Number(publishedLimit))) {
+      .slice(
+        0,
+        Number(publishedLimit) >= 1000 ? undefined : Number(publishedLimit),
+      )) {
       try {
         const parsed = parsePaste(await pasteFromUrl(team.url), {
           allowMissing: true,
@@ -365,6 +403,7 @@ export async function refresh({
               weight: null,
             });
         }
+        team.sets = parsed;
         publishedLoaded++;
       } catch (e) {
         warnings.push(`${team.id}: ${e.message}`);
@@ -375,7 +414,7 @@ export async function refresh({
         "In-game ladder data reflects the current season, not historical M-B. Published teams and tournament selection use M-B.",
       );
     const data = {
-      version: 1,
+      version: 2,
       updatedAt: new Date().toISOString(),
       format,
       config: {
