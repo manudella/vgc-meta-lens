@@ -512,3 +512,132 @@
   border: 1px solid #b8cda6;
   border-radius: 5px;
 }
+
+.sidebar-bottom {
+  margin-top: auto;
+}
+.table-tools .gap-toggle {
+  margin-left: 0;
+  white-space: nowrap;
+  padding: 8px 10px;
+}
+.damage-meter {
+  display: block;
+  height: 7px;
+  width: 100%;
+  min-width: 65px;
+  position: relative;
+  background: #fff9;
+  border: 1px solid #29433844;
+  border-radius: 3px;
+  margin: 5px 0;
+  overflow: hidden;
+}
+.damage-meter i {
+  position: absolute;
+  height: 100%;
+  top: 0;
+}
+.damage-min {
+  left: 0;
+  background: currentColor;
+  opacity: 0.85;
+}
+.damage-range {
+  background: repeating-linear-gradient(
+    115deg,
+    currentColor 0 2px,
+    transparent 2px 4px
+  );
+  opacity: 0.65;
+}
+.damage-meter .damage-tick {
+  width: 1px;
+  background: #fff9;
+  z-index: 2;
+}
+.damage-tick.fifty {
+  left: 50%;
+}
+.damage-tick.eighty {
+  left: 80%;
+}
+.damage-overflow {
+  position: absolute;
+  right: 1px;
+  top: -5px;
+  color: #fff;
+  font-size: 12px;
+}
+.split-out,
+.split-in {
+  width: min(58%, 190px);
+}
+.matrix-page .split-cell {
+  height: 162px;
+}
+.split-bg.low {
+  background: #d6edda;
+}
+.split-bg.medium {
+  background: #f4e8b9;
+}
+.split-bg.high {
+  background: #f3d3d0;
+}
+.split-bg.lethal {
+  background: #e5cbed;
+}
+.split-bg.low.faster {
+  background: #80d49b;
+}
+.split-bg.medium.faster {
+  background: #efd068;
+}
+.split-bg.high.faster {
+  background: #f08881;
+}
+.split-bg.lethal.faster {
+  background: #cf8fe8;
+}
+.matrix-page .calc-cell.damage-tone.low {
+  background: #e0f0df;
+  color: #296240;
+}
+.matrix-page .calc-cell.damage-tone.medium {
+  background: #fff0c3;
+  color: #825b09;
+}
+.matrix-page .calc-cell.damage-tone.high {
+  background: #fbe0da;
+  color: #ab342c;
+}
+.matrix-page .calc-cell.damage-tone.lethal {
+  background: #eccff6;
+  color: #632381;
+  border: 1px solid #b06cce;
+}
+.matrix-page .calc-cell .ko-alert {
+  display: inline-block;
+  padding: 2px 5px;
+  border-radius: 4px;
+  background: #742b91;
+  color: white;
+  font-weight: 800;
+  font-size: 9px;
+  opacity: 1;
+}
+.split-out .damage-meter,
+.split-in .damage-meter {
+  color: #304939;
+}
+.opponent-section {
+  padding: 12px 0 16px;
+  border-top: 1px solid #dce4d4;
+}
+.opponent-section .team-strip {
+  margin-top: 10px;
+}
+.published .opponent-load {
+  margin-top: 6px;
+}

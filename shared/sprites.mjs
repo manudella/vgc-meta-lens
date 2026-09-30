@@ -20,12 +20,25 @@ export function spriteId(name) {
     .replace("-paldea-", "-paldea");
   return aliases[value] || value;
 }
+const megaArtwork = {
+  "staraptor-mega": 10308,
+  "pyroar-mega": 10295,
+  "malamar-mega": 10297,
+  "scrafty-mega": 10289,
+  "dragalge-mega": 10299,
+  "eelektross-mega": 10290,
+  "scolipede-mega": 10288,
+  "falinks-mega": 10303,
+};
 export function spriteCandidates(name) {
   const id = spriteId(name);
   const official = /^raichu-mega[xy]$/.test(id)
     ? `https://legends.pokemon.com/_next/image?url=%2Fimages%2Fdlc%2Fmega_raichu_${id.endsWith("x") ? "x" : "y"}_square.png&w=384&q=75`
     : null;
   return [
+    megaArtwork[id]
+      ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${megaArtwork[id]}.png`
+      : null,
     official,
     `https://play.pokemonshowdown.com/sprites/gen5/${id}.png`,
     `https://play.pokemonshowdown.com/sprites/dex/${id}.png`,

@@ -116,6 +116,12 @@ function App() {
         stored("meta-lens-team", null) ? "Saved team" : "Example core",
       ),
     ),
+    [opponentTeam, setOpponentTeam] = useState(() =>
+      stored("meta-lens-opponent", []),
+    ),
+    [opponentSource, setOpponentSource] = useState(() =>
+      stored("meta-lens-opponent-source", "Imported opponent"),
+    ),
     [data, setData] = useState(null),
     [status, setStatus] = useState({ running: true, progress: "Connecting" }),
     [cat, setCat] = useState(null),
@@ -140,6 +146,15 @@ function App() {
     [limit, setLimit] = useState(20),
     [gapsOnly, setGapsOnly] = useState(false),
     [sort, setSort] = useState("usage");
+  const isVersus = tab === "versus";
+  const isMatrix = tab === "matchups" || isVersus;
+  useEffect(() => {
+    localStorage.setItem("meta-lens-opponent", JSON.stringify(opponentTeam));
+    localStorage.setItem(
+      "meta-lens-opponent-source",
+      JSON.stringify(opponentSource),
+    );
+  }, [opponentTeam, opponentSource]);
   useEffect(() => {
     let alive = true;
     api("catalog")
@@ -175,12 +190,24 @@ function App() {
     localStorage.setItem("meta-lens-team-source", JSON.stringify(teamSource));
   }, [team, teamSource]);
   useEffect(() => {
-    if (!data) return;
+    if (isVersus ? !opponentTeam.length : !data) {
+      setRows([]);
+      setBusy(false);
+      return;
+    }
     const c = new AbortController();
     setBusy(true);
     const timer = setTimeout(
       () =>
-        api("analyze", { team, options, view: { limit, query } }, c.signal)
+        api(
+          "analyze",
+          {
+            team,
+            options,
+            ...(isVersus ? { opponentTeam } : { view: { limit, query } }),
+          },
+          c.signal,
+        )
           .then((r) => {
             setRows(r);
             setError("");
@@ -200,12 +227,12 @@ function App() {
       clearTimeout(timer);
       c.abort();
     };
-  }, [team, data, options, limit, query]);
+  }, [team, data, options, limit, query, isVersus, opponentTeam]);
   useEffect(() => {
     setQuickCalc(null);
-    const opponent = data?.threats
-      .find((t) => t.species === selected)
-      ?.sets.find((s) => s.kind === "estimated");
+    const opponent = rows
+      .find((t) => (t.id || t.species) === selected)
+      ?.sets.find((s) => s.kind === "estimated" || s.kind === "exact");
     if (!quickControls || !opponent) return;
     const controller = new AbortController();
     api(
@@ -218,7 +245,7 @@ function App() {
         if (e.name !== "AbortError") setError(e.message);
       });
     return () => controller.abort();
-  }, [team, member, selected, options, quickControls, data]);
+  }, [team, member, selected, options, quickControls, rows]);
   const visible = useMemo(
     () =>
       rows
@@ -258,6 +285,22 @@ function App() {
     setSelected(null);
     setModal(null);
   };
+  const changeOpponent = (next, source = "Imported opponent") => {
+    setOpponentTeam(next);
+    setOpponentSource(source);
+    setRows([]);
+    setSelected(null);
+    setModal(null);
+    setTab("versus");
+    setQuery("");
+    setGapsOnly(false);
+  };
+  const navigate = (next) => {
+    setTab(next);
+    setSelected(null);
+    setQuery("");
+    setGapsOnly(false);
+  };
   const refresh = async (config) => {
     try {
       await api("refresh", config || {});
@@ -274,6 +317,7 @@ function App() {
           JSON.stringify(
             {
               team,
+              opponentTeam: isVersus ? opponentTeam : undefined,
               options,
               dataset: {
                 updatedAt: data?.updatedAt,
@@ -315,13 +359,14 @@ function App() {
         <nav>
           {[
             ["matchups", Layers3, "Matchup matrix"],
+            ["versus", Target, "Team vs team"],
             ["teams", BookOpen, "Published teams"],
             ["sources", Database, "Data & sources"],
           ].map(([id, Icon, label]) => (
             <button
               key={id}
               className={tab === id ? "nav active" : "nav"}
-              onClick={() => setTab(id)}
+              onClick={() => navigate(id)}
             >
               <Icon size={18} />
               {label}
@@ -329,14 +374,6 @@ function App() {
             </button>
           ))}
         </nav>
-        <div className="sidebar-note">
-          <div className="line-orbit">
-            <Target size={23} />
-          </div>
-          <strong>Know your ranges.</strong>
-          <p>From the whole metagame to the roll that matters.</p>
-          <span>CHAMPIONS · LEVEL 50</span>
-        </div>
         <div className="sidebar-bottom">
           <span className="online-dot" /> Local workspace
           <small>Nimbasa City Post calculation engine</small>
@@ -347,29 +384,33 @@ function App() {
           <div className="breadcrumbs">
             Workspace <ChevronRight size={14} />{" "}
             <strong>
-              {tab === "matchups"
-                ? "Matchup matrix"
-                : tab === "teams"
-                  ? "Published teams"
-                  : "Data & sources"}
+              {isVersus
+                ? "Team vs team"
+                : tab === "matchups"
+                  ? "Matchup matrix"
+                  : tab === "teams"
+                    ? "Published teams"
+                    : "Data & sources"}
             </strong>
           </div>
           <span className="format-badge">
             POKÉMON CHAMPIONS <span>{data?.format || LATEST_METAGAME}</span>
           </span>
         </header>
-        <div className={"page " + (tab === "matchups" ? "matrix-page" : "")}>
+        <div className={"page " + (isMatrix ? "matrix-page" : "")}>
           <div className="page-heading">
             <div>
               <div className="eyebrow">
                 YOUR TEAM. THE METAGAME. EVERY ROLL.
               </div>
               <h1>
-                {tab === "matchups"
-                  ? "Your team × the meta."
-                  : tab === "teams"
-                    ? "Learn from the field."
-                    : "Trace every number."}
+                {isVersus
+                  ? "Your team × their team."
+                  : tab === "matchups"
+                    ? "Your team × the meta."
+                    : tab === "teams"
+                      ? "Learn from the field."
+                      : "Trace every number."}
               </h1>
               <p>
                 {tab === "matchups"
@@ -414,7 +455,7 @@ function App() {
               </span>
             </div>
           )}
-          {tab === "matchups" && (
+          {isMatrix && (
             <>
               <section className="team-section">
                 <div className="section-title">
@@ -494,6 +535,60 @@ function App() {
                   )}
                 </div>
               </section>
+              {isVersus && (
+                <section className="opponent-section">
+                  <div className="section-title">
+                    <div>
+                      <h2>Opponent team</h2>
+                      <span className="muted">
+                        {opponentTeam.length} / 6 · {opponentSource}
+                      </span>
+                    </div>
+                    <div className="actions">
+                      <button
+                        className="secondary"
+                        onClick={() => setModal({ type: "opponent-import" })}
+                      >
+                        Import opponent team
+                      </button>
+                      <button
+                        className="secondary"
+                        onClick={() => setTab("teams")}
+                      >
+                        Choose published opponent
+                      </button>
+                    </div>
+                  </div>
+                  <div className="team-strip">
+                    {opponentTeam.map((p, i) => (
+                      <button
+                        className="team-chip team-chip-select"
+                        key={i}
+                        onClick={() =>
+                          setModal({ type: "opponent-edit", index: i })
+                        }
+                        aria-label={`Edit opponent ${p.species}`}
+                      >
+                        <PokemonSprite
+                          small
+                          name={displaySpecies(p, cat?.megaItems)}
+                        />
+                        <span>
+                          <strong>{p.species}</strong>
+                          <small>{p.item || "No item"}</small>
+                        </span>
+                        <Settings2 size={14} />
+                      </button>
+                    ))}
+                  </div>
+                  {opponentTeam.some((p) => p.spreadKnown === false) && (
+                    <p className="warning-note">
+                      Some opponent spreads were not published and currently use
+                      0 SP. Edit them before relying on these calculations.
+                    </p>
+                  )}
+                </section>
+              )}
               <div className="source-strip">
                 <span>
                   <strong>{data?.threats.length || "—"}</strong> meta Pokémon
@@ -520,7 +615,11 @@ function App() {
               <section
                 className="analysis-section"
                 id="matchup-matrix"
-                aria-label="Team versus metagame matrix"
+                aria-label={
+                  isVersus
+                    ? "Team versus team matrix"
+                    : "Team versus metagame matrix"
+                }
               >
                 <div className="section-title">
                   <div>
@@ -660,39 +759,6 @@ function App() {
                     <QuickField options={options} onChange={setOptions} />
                   </div>
                 )}
-                <div className="matrix-summary" aria-live="polite">
-                  <span>
-                    <Target size={15} />
-                    <strong>
-                      {busy
-                        ? "…"
-                        : rows.filter((r) => r.cells.some((c) => c.ko >= 0.95))
-                            .length}{" "}
-                      / {rows.length}
-                    </strong>{" "}
-                    threats with a ≥95% OHKO option
-                  </span>
-                  <span>
-                    <Shield size={15} />
-                    <strong>
-                      {busy
-                        ? "…"
-                        : rows.filter((r) =>
-                            r.cells.some((c) => c.survive >= 0.95),
-                          ).length}{" "}
-                      / {rows.length}
-                    </strong>{" "}
-                    with a ≥95% survival option
-                  </span>
-                  <button
-                    className={gapsOnly ? "gap-toggle active" : "gap-toggle"}
-                    aria-pressed={gapsOnly}
-                    onClick={() => setGapsOnly(!gapsOnly)}
-                  >
-                    {" "}
-                    {gapsOnly ? "Show all rows" : "Show coverage gaps"}
-                  </button>
-                </div>
                 <div className="table-toolbar">
                   <div className="segmented">
                     <button
@@ -717,57 +783,74 @@ function App() {
                     </button>
                   </div>
                   <div className="table-tools">
+                    <button
+                      className={gapsOnly ? "gap-toggle active" : "gap-toggle"}
+                      aria-pressed={gapsOnly}
+                      onClick={() => setGapsOnly(!gapsOnly)}
+                    >
+                      {gapsOnly ? "Show all rows" : "Show coverage gaps"}
+                    </button>
                     <label className="search">
                       <Search size={15} />
                       <input
-                        placeholder="Search all meta…"
-                        aria-label="Search all meta"
+                        placeholder={
+                          isVersus
+                            ? "Search opponent team…"
+                            : "Search all meta…"
+                        }
+                        aria-label={
+                          isVersus ? "Search opponent team" : "Search all meta"
+                        }
                         maxLength={100}
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                       />
                     </label>
-                    <select
-                      aria-label="Matrix scope"
-                      value={limit}
-                      onChange={(e) => {
-                        setLimit(Number(e.target.value));
-                        setSelected(null);
-                      }}
-                    >
-                      <option value={20}>Top 20</option>
-                      <option value={40}>Top 40</option>
-                      <option value={80}>Top 80</option>
-                      <option value={0}>
-                        All {data?.threats.length || "meta"}
-                      </option>
-                    </select>
+                    {!isVersus && (
+                      <select
+                        aria-label="Matrix scope"
+                        value={limit}
+                        onChange={(e) => {
+                          setLimit(Number(e.target.value));
+                          setSelected(null);
+                        }}
+                      >
+                        <option value={20}>Top 20</option>
+                        <option value={40}>Top 40</option>
+                        <option value={80}>Top 80</option>
+                        <option value={0}>
+                          All {data?.threats.length || "meta"}
+                        </option>
+                      </select>
+                    )}
                     <select
                       aria-label="Sort threats"
                       value={sort}
                       onChange={(e) => setSort(e.target.value)}
                     >
-                      <option value="usage">Tournament usage</option>
+                      <option value="usage">
+                        {isVersus ? "Opponent team order" : "Tournament usage"}
+                      </option>
                       <option value="risk">Team survival gaps</option>
                     </select>
                   </div>
                 </div>
                 <div className="table-explainer">
                   <Info size={14} />
-                  {mode === "both"
-                    ? "↗ Dealt / ↙ received. Green = reliable KO or survival. Brighter half = faster; pale halves = variable speed or tie."
-                    : mode === "outgoing"
-                      ? "Damage % + OHKO chance. Color = KO reliability. Ranges span the modeled spreads."
-                      : "Damage % received + survival chance. Color = survival reliability across modeled spreads."}{" "}
+                  Bars show damage: solid to minimum, striped to maximum (100%
+                  HP scale). Color uses maximum damage; ✹ marks KO chance above
+                  50%. Brighter half = faster.{" "}
                   <strong>Click any cell to inspect.</strong>
                 </div>
                 <div className="matrix-context">
                   <span>
-                    {query.trim()
-                      ? "Search across all loaded threats"
-                      : limit
-                        ? `Top ${limit} by event usage`
-                        : "Entire loaded metagame"}{" "}
+                    {isVersus
+                      ? "Exact opponent sets"
+                      : query.trim()
+                        ? "Search across all loaded threats"
+                        : limit
+                          ? `Top ${limit} by event usage`
+                          : "Entire loaded metagame"}{" "}
                     · {visible.length} rows
                     {gapsOnly
                       ? ` · no ≥95% ${mode === "incoming" ? "survival" : "OHKO"} option`
@@ -795,7 +878,12 @@ function App() {
                     <thead>
                       <tr>
                         <th className="threat-heading">
-                          OPPONENT <span>EVENT USAGE / GAME RANK</span>
+                          OPPONENT{" "}
+                          <span>
+                            {isVersus
+                              ? "EXACT TEAM SETS"
+                              : "EVENT USAGE / GAME RANK"}
+                          </span>
                         </th>
                         {team.map((p, i) => (
                           <th key={i} className={member === i ? "focused" : ""}>
@@ -813,10 +901,12 @@ function App() {
                     </thead>
                     <tbody>
                       {visible.map((r, ri) => (
-                        <React.Fragment key={r.species}>
+                        <React.Fragment key={r.id || r.species}>
                           <tr
                             className={
-                              selected === r.species ? "row-selected" : ""
+                              selected === (r.id || r.species)
+                                ? "row-selected"
+                                : ""
                             }
                           >
                             <td>
@@ -824,7 +914,9 @@ function App() {
                                 className="threat-label"
                                 onClick={() =>
                                   setSelected(
-                                    selected === r.species ? null : r.species,
+                                    selected === (r.id || r.species)
+                                      ? null
+                                      : r.id || r.species,
                                   )
                                 }
                               >
@@ -835,7 +927,9 @@ function App() {
                                   small
                                   name={displaySpecies(
                                     r.sets.find(
-                                      (s) => s.kind === "estimated",
+                                      (s) =>
+                                        s.kind === "estimated" ||
+                                        s.kind === "exact",
                                     ) || { species: r.species },
                                     cat?.megaItems,
                                   )}
@@ -844,13 +938,19 @@ function App() {
                                 <span>
                                   <strong>{r.species}</strong>
                                   <small>
-                                    {r.usage != null
-                                      ? `${num(r.usage)}% of teams`
-                                      : "No event sample"}{" "}
-                                    <b>·</b> #{r.rank || "—"} in game
+                                    {r.exact ? (
+                                      `${r.sets[0].item || "No item"} · ${r.sets[0].nature}`
+                                    ) : (
+                                      <>
+                                        {r.usage != null
+                                          ? `${num(r.usage)}% of teams`
+                                          : "No event sample"}{" "}
+                                        · #{r.rank || "—"} in game
+                                      </>
+                                    )}
                                   </small>
                                 </span>
-                                {selected === r.species ? (
+                                {selected === (r.id || r.species) ? (
                                   <ChevronDown size={15} />
                                 ) : (
                                   <ChevronRight size={15} />
@@ -873,10 +973,11 @@ function App() {
                                     own={team[i]?.species || "Updating"}
                                     foe={r.species}
                                     expanded={
-                                      selected === r.species && member === i
+                                      selected === (r.id || r.species) &&
+                                      member === i
                                     }
                                     onClick={() => {
-                                      setSelected(r.species);
+                                      setSelected(r.id || r.species);
                                       setMember(i);
                                     }}
                                   />
@@ -884,7 +985,7 @@ function App() {
                               );
                             })}
                           </tr>
-                          {selected === r.species && (
+                          {selected === (r.id || r.species) && (
                             <tr className="detail-row">
                               <td colSpan={team.length + 1}>
                                 <button
@@ -894,9 +995,19 @@ function App() {
                                   <X size={15} /> Close matchup · back to matrix
                                 </button>
                                 <Matchup
-                                  key={`${r.species}-${member}`}
+                                  key={`${r.id || r.species}-${member}`}
                                   team={team[member]}
                                   threat={r}
+                                  onOpponentChange={
+                                    isVersus
+                                      ? (p) =>
+                                          setOpponentTeam((t) =>
+                                            t.map((v, i) =>
+                                              i === r.opponentIndex ? p : v,
+                                            ),
+                                          )
+                                      : undefined
+                                  }
                                   speedRange={r.cells[member]?.speedRange}
                                   options={options}
                                   onOptions={setOptions}
@@ -920,22 +1031,26 @@ function App() {
                     <div className="empty">
                       <Layers3 size={30} />
                       <h3>
-                        {busy
-                          ? "Calculating your matrix"
-                          : data
-                            ? gapsOnly
-                              ? "No coverage gaps in this view"
-                              : "No matching threats"
-                            : "Preparing your metagame"}
+                        {isVersus && !opponentTeam.length
+                          ? "Add an opponent team"
+                          : busy
+                            ? "Calculating your matrix"
+                            : data
+                              ? gapsOnly
+                                ? "No coverage gaps in this view"
+                                : "No matching threats"
+                              : "Preparing your metagame"}
                       </h3>
                       <p>
-                        {busy
-                          ? "Applying your team, modeled spreads and battle conditions…"
-                          : data
-                            ? gapsOnly
-                              ? "Every row has at least one teammate meeting the selected 95% threshold."
-                              : "Try a different search, or check any import errors above."
-                            : "The first launch fetches public data. Future launches use the local cache."}
+                        {isVersus && !opponentTeam.length
+                          ? "Import team text or a Poképaste, or choose a published opponent above."
+                          : busy
+                            ? "Applying your team, modeled spreads and battle conditions…"
+                            : data
+                              ? gapsOnly
+                                ? "Every row has at least one teammate meeting the selected 95% threshold."
+                                : "Try a different search, or check any import errors above."
+                              : "The first launch fetches public data. Future launches use the local cache."}
                       </p>
                     </div>
                   )}
@@ -943,34 +1058,37 @@ function App() {
                 <div className="legend">
                   <span>
                     <i className="green-dot" />
-                    95–100%
+                    Damage &lt;50%
                   </span>
                   <span>
                     <i className="yellow-dot" />
-                    50–95%
+                    Damage 50–80%
                   </span>
                   <span>
                     <i className="red-dot" />
-                    Below 50%
+                    Damage &gt;80%
                   </span>
                   <span className="legend-note">
-                    Conditional on a hit · estimated sets · not a battle win
-                    probability
+                    Conditional on a hit ·{" "}
+                    {isVersus ? "exact imported sets" : "estimated sets"} · not
+                    a battle win probability
                   </span>
                 </div>
               </section>
-              <div className="method-note">
-                <Shield size={19} />
-                <p>
-                  <strong>Know what the numbers mean.</strong> The matrix models
-                  the most-used item, nature, ability and four moves with the
-                  selected reported spread sample. These are separate marginal
-                  distributions, not observed full sets. Percentages are
-                  normalized within the displayed spread sample; the detail view
-                  shows its coverage. All field conditions apply to both the
-                  table and individual calculations.
-                </p>
-              </div>
+              {!isVersus && (
+                <div className="method-note">
+                  <Shield size={19} />
+                  <p>
+                    <strong>Know what the numbers mean.</strong> The matrix
+                    models the most-used item, nature, ability and four moves
+                    with the selected reported spread sample. These are separate
+                    marginal distributions, not observed full sets. Percentages
+                    are normalized within the displayed spread sample; the
+                    detail view shows its coverage. All field conditions apply
+                    to both the table and individual calculations.
+                  </p>
+                </div>
+              )}
             </>
           )}
           {tab === "sources" && (
@@ -979,6 +1097,19 @@ function App() {
           {tab === "teams" && (
             <Published
               data={data}
+              onOpponent={async (t) => {
+                try {
+                  setBusy(true);
+                  changeOpponent(
+                    (await api("import", { url: t.url })).team,
+                    t.title,
+                  );
+                } catch (e) {
+                  setError(e.message);
+                } finally {
+                  setBusy(false);
+                }
+              }}
               onImport={async (url) => {
                 try {
                   setBusy(true);
@@ -1007,6 +1138,33 @@ function App() {
           </footer>
         </div>
       </main>
+      {modal?.type === "opponent-import" && (
+        <ImportModal
+          title="Import opponent team"
+          opponent
+          close={() => setModal(null)}
+          onImport={changeOpponent}
+          current={opponentTeam}
+        />
+      )}
+      {modal?.type === "opponent-edit" && cat && (
+        <EditModal
+          set={opponentTeam[modal.index]}
+          cat={cat}
+          close={() => setModal(null)}
+          onSave={(p) => {
+            setOpponentTeam((t) =>
+              t.map((v, i) => (i === modal.index ? p : v)),
+            );
+            setModal(null);
+          }}
+          onRemove={() => {
+            setOpponentTeam((t) => t.filter((_, i) => i !== modal.index));
+            setSelected(null);
+            setModal(null);
+          }}
+        />
+      )}
       {modal?.type === "import" && (
         <ImportModal
           close={() => setModal(null)}
@@ -1071,14 +1229,20 @@ function Modal({ title, close, children, wide }) {
     </div>
   );
 }
-function ImportModal({ close, onImport, current }) {
+function ImportModal({
+  close,
+  onImport,
+  current,
+  title = "Bring your team into focus",
+  opponent = false,
+}) {
   const [text, setText] = useState(""),
     [url, setUrl] = useState(""),
     [append, setAppend] = useState(false),
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false);
   return (
-    <Modal title="Bring your team into focus" close={close}>
+    <Modal title={title} close={close}>
       <p>
         Paste one Pokémon, a core, or your full team. Standard EV pastes convert
         to equivalent level-50 Champions stat points.
@@ -1109,7 +1273,7 @@ function ImportModal({ close, onImport, current }) {
           checked={append}
           onChange={(e) => setAppend(e.target.checked)}
         />
-        Add to my current team
+        Add to {opponent ? "the opponent" : "my current"} team
       </label>
       {error && <div className="alert">{error}</div>}
       <div className="modal-actions">
@@ -1134,7 +1298,7 @@ function ImportModal({ close, onImport, current }) {
             }
           }}
         >
-          {busy ? "Importing…" : "Analyze my team"}
+          {busy ? "Importing…" : opponent ? "Compare teams" : "Analyze my team"}
           <ArrowRight size={16} />
         </button>
       </div>
@@ -1412,6 +1576,7 @@ function Matchup({
   cat,
   onApply,
   speedRange,
+  onOpponentChange,
 }) {
   const [opponent, setOpponent] = useState(threat.sets[0]),
     [candidate, setCandidate] = useState(structuredClone(team)),
@@ -1420,6 +1585,13 @@ function Matchup({
     [direction, setDirection] = useState("outgoing"),
     [move, setMove] = useState(""),
     [edit, setEdit] = useState(false);
+  const updateOpponent = (p) => {
+    setOpponent(p);
+    onOpponentChange?.(p);
+  };
+  useEffect(() => {
+    if (threat.exact) setOpponent(threat.sets[0]);
+  }, [threat.exact, threat.sets]);
   useEffect(() => {
     setCandidate(structuredClone(team));
   }, [team]);
@@ -1492,13 +1664,15 @@ function Matchup({
           </span>
         </div>
       </div>
-      <SetPicker
-        threat={threat}
-        opponent={opponent}
-        onSelect={(set) => {
-          setOpponent(set);
-        }}
-      />
+      {!threat.exact && (
+        <SetPicker
+          threat={threat}
+          opponent={opponent}
+          onSelect={(set) => {
+            updateOpponent(set);
+          }}
+        />
+      )}
       <div className="set-summary">
         <span>{opponent.item || "No item"}</span>
         <span>{opponent.ability}</span>
@@ -1507,17 +1681,25 @@ function Matchup({
           {keys.map((k) => opponent.sp[k] || 0).join(" / ")} SP
         </span>
         <span className="tag">
-          {opponent.kind === "published"
-            ? "Published set"
-            : "Estimated combination"}
+          {threat.exact
+            ? "Exact opponent set"
+            : opponent.kind === "published"
+              ? "Published set"
+              : "Estimated combination"}
         </span>
       </div>
       <p className="sample-note">
         {opponent.spreadNote && <>{opponent.spreadNote} </>}
-        Modeled spreads cover <strong>{num(threat.spreadCoverage)}%</strong> of
-        reported spread usage. Remaining spreads are not modeled. Published sets
-        have no ladder frequency. KO chances below are conditional on the
-        selected set and the move connecting.
+        {threat.exact ? (
+          "Exact imported spread. KO chances assume the move connects and the selected battle state applies."
+        ) : (
+          <>
+            Modeled spreads cover <strong>{num(threat.spreadCoverage)}%</strong>{" "}
+            of reported spread usage. Remaining spreads are not modeled.
+            Published sets have no ladder frequency. KO chances below are
+            conditional on the selected set and the move connecting.
+          </>
+        )}
       </p>
       {calc && (
         <div className="compact-speed">
@@ -1532,7 +1714,7 @@ function Matchup({
                 ? "You faster"
                 : "Foe faster"}
           </span>
-          {speedRange && (
+          {!threat.exact && speedRange && (
             <span>
               Modeled foe range {speedRange.opponent[0]}–
               {speedRange.opponent[1]} · modal nature
@@ -1555,7 +1737,7 @@ function Matchup({
         />
         <QuickSet
           value={opponent}
-          onChange={setOpponent}
+          onChange={updateOpponent}
           title="Opponent battle state"
           effective={calc?.opponentStats}
         />
@@ -1603,7 +1785,7 @@ function Matchup({
             <SetEditor
               value={opponent}
               effective={calc?.opponentStats}
-              onChange={setOpponent}
+              onChange={updateOpponent}
               cat={cat}
               compact
             />
@@ -1963,7 +2145,7 @@ function Sources({ data, status, onRefresh }) {
     </div>
   );
 }
-function Published({ data, onImport, busy }) {
+function Published({ data, onImport, onOpponent, busy }) {
   const [q, setQ] = useState("");
   return (
     <section className="published">
@@ -2027,6 +2209,13 @@ function Published({ data, onImport, busy }) {
               >
                 Load as my team
                 <ArrowRight size={15} />
+              </button>
+              <button
+                className="secondary opponent-load"
+                disabled={busy}
+                onClick={() => onOpponent(t)}
+              >
+                Use as opponent <Target size={15} />
               </button>
             </article>
           ))}

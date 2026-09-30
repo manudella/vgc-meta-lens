@@ -10,7 +10,9 @@ export function analyze(team, threats, options = {}) {
     throw new Error("Use 1–6 team members.");
   team.forEach(validateSet);
   const rows = threats.map((threat) => {
-    const sets = threat.sets.filter((s) => s.kind === "estimated");
+    const sets = threat.sets.filter(
+      (s) => s.kind === "estimated" || (threat.exact && s.kind === "exact"),
+    );
     return {
       ...threat,
       cells: team.map((member) => {

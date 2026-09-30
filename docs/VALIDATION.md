@@ -30,3 +30,12 @@ Limits: no real-game replay oracle or exhaustive Champions mechanic validation w
 - Terrain-dependent moves assume their enabling terrain only when no terrain-setting ability or explicit terrain overrides it; this assumption can be disabled with the quick Move terrain button. Tests compare automatic Expanding Force against explicit Psychic Terrain and against None.
 
 Earlier records above describe prior versions; the initiative panel and manual funding-stat explorer were replaced in 0.2.0. No exhaustive game oracle validation is claimed.
+
+## Version 0.3.0: damage bars, exact opponents and tournament forms
+
+- 45 offline tests pass. Added direct exact-team versus 1v1 equivalence checks, distinct duplicate-species slots, tournament-form normalization/deduplication, unknown-form warnings, strict >50% KO highlighting, damage thresholds and capped damage bars.
+- Audited all raw form labels in the three selected M-C events. Previously unmatched labels included Basculegion, Indeedee, Meowstic, regional Pokemon, Rotom and cosmetic forms. No unmapped labels remain in this snapshot.
+- Corrected male Basculegion: 392 / 2,533 usable teams = 15.4757%; female: 2 / 2,533 = 0.0790%. Other recovered counts include Hisuian Arcanine 560, Indeedee-F 452, Indeedee 167 and Eternal Floette 299. Denominators still exclude missing sheets; aliases deduplicate within a team.
+- All eight requested Mega artwork URLs returned HTTP 200 from PokeAPI's official-artwork collection; exact species IDs came from PokeAPI's Pokemon table.
+- Removed coverage summary and sidebar slogan. Damage bars apply to both diagonal halves and both single-direction modes; the gap filter sits beside search.
+- Browser verification: two-member text import produced eight exact cells; selecting MC405 from Published teams produced six opponent rows / 24 cells while preserving the four-member user team. Changing the opponent Rillaboom nature to Brave updated its matrix label and effective speed; restored Adamant afterward. Mega Staraptor rendered its 475px artwork. Both damage-only modes and the split view use damage range bars.

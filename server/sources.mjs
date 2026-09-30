@@ -85,6 +85,7 @@ export async function getEvents() {
 }
 export function tournamentUsage(events) {
   const counts = new Map();
+  const unmapped = new Map();
   let teamCount = 0,
     entries = 0;
   for (const event of events) {
@@ -93,7 +94,14 @@ export function tournamentUsage(events) {
       if (!Array.isArray(player.decklist) || !player.decklist.length) continue;
       teamCount++;
       const species = new Set(
-        player.decklist.map((p) => baseName(speciesName(p.name) || p.name)),
+        player.decklist.flatMap((p) => {
+          const canonical = speciesName(p.name);
+          if (!canonical) {
+            unmapped.set(p.name, (unmapped.get(p.name) || 0) + 1);
+            return [];
+          }
+          return [baseName(canonical)];
+        }),
       );
       for (const name of species) counts.set(name, (counts.get(name) || 0) + 1);
     }
@@ -101,6 +109,7 @@ export function tournamentUsage(events) {
   return {
     teamCount,
     entries,
+    unmapped: Object.fromEntries(unmapped),
     usage: Object.fromEntries(
       [...counts].map(([name, count]) => [
         name,
@@ -284,6 +293,10 @@ export async function refresh({
       }
     }
     const usage = tournamentUsage(tournaments);
+    for (const [name, count] of Object.entries(usage.unmapped))
+      warnings.push(
+        `Unmapped tournament form: ${name} (${count} sheets). Excluded from species counts; denominator retained.`,
+      );
     const seedRaw = await cachedFetch(
       "https://www.munchstats.com/api/championsdoubles/0/Rillaboom",
     );
@@ -414,7 +427,7 @@ export async function refresh({
         "In-game ladder data reflects the current season, not historical M-B. Published teams and tournament selection use M-B.",
       );
     const data = {
-      version: 2,
+      version: 3,
       updatedAt: new Date().toISOString(),
       format,
       config: {

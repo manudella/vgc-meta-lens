@@ -1,3 +1,4 @@
+import { sourceSpeciesName } from "../shared/species-forms.mjs";
 import vm from "node:vm";
 import fs from "node:fs";
 import extend from "extend";
@@ -68,6 +69,7 @@ const megaByItem = new Map(
     .map(([name, item]) => [item, name]),
 );
 export function speciesName(name) {
+  name = sourceSpeciesName(name);
   name = name
     .replace("Sinistcha-Masterpiece", "Sinistcha")
     .replace("Poltchageist-Artisan", "Poltchageist")

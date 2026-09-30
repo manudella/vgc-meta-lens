@@ -7,6 +7,7 @@ import { catalog, calculatePair } from "./engine.mjs";
 import { parsePaste } from "./paste.mjs";
 import { sweep } from "./analysis.mjs";
 import { selectThreats } from "./matrix-view.mjs";
+import { exactThreats } from "./team-comparison.mjs";
 import { state, restore, refresh, pasteFromUrl } from "./sources.mjs";
 const app = express(),
   port = Number(process.env.PORT) || 4783;
@@ -51,16 +52,20 @@ app.post("/api/import", async (req, res) => {
 const analysisCache = new Map();
 let cacheDataset;
 app.post("/api/analyze", async (req, res) => {
-  if (!state.data) throw new Error("Wait for data refresh first.");
-  if (cacheDataset !== state.data.updatedAt) {
+  if (!state.data && !req.body.opponentTeam)
+    throw new Error("Wait for data refresh first.");
+  if (cacheDataset !== state.data?.updatedAt) {
     analysisCache.clear();
-    cacheDataset = state.data.updatedAt;
+    cacheDataset = state.data?.updatedAt;
   }
   const datasetVersion = cacheDataset;
-  const threats = selectThreats(state.data.threats, req.body.view);
+  const threats = req.body.opponentTeam
+    ? exactThreats(req.body.opponentTeam)
+    : selectThreats(state.data.threats, req.body.view);
   const cacheKey = JSON.stringify([
     req.body.team,
     req.body.options,
+    req.body.opponentTeam,
     threats.map((t) => t.species),
   ]);
   if (analysisCache.has(cacheKey)) return res.json(analysisCache.get(cacheKey));
@@ -84,7 +89,7 @@ app.post("/api/analyze", async (req, res) => {
     });
   });
   if (!res.destroyed) {
-    if (datasetVersion === state.data.updatedAt) {
+    if (datasetVersion === state.data?.updatedAt) {
       if (analysisCache.size >= 8)
         analysisCache.delete(analysisCache.keys().next().value);
       analysisCache.set(cacheKey, rows);
@@ -127,11 +132,11 @@ app.listen(port, "127.0.0.1", () => {
   console.log(`Meta Lens running at http://127.0.0.1:${port}`);
   if (
     !state.data ||
-    state.data.version !== 2 ||
+    state.data.version !== 3 ||
     Date.now() - Date.parse(state.data.updatedAt) > 24 * 3600 * 1000
   )
     void refresh(
-      state.data?.version === 2
+      state.data?.version >= 2
         ? state.data.config
         : {
             format: "M-C",
