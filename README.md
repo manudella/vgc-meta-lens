@@ -4,13 +4,27 @@ A local Pokémon Champions matchup lab: import a team or a core, explore the met
 
 This is a standalone project. It does not depend on, integrate with, or modify AIgislash.
 
-## Start on Windows
+## Install the Windows app
 
-1. Install [Node.js](https://nodejs.org/) 22.12 or newer.
+Download **Meta-Lens-1.0.0-x64-setup.exe** from the [latest release](https://github.com/manudella/vgc-meta-lens/releases/latest). Run the installer, then open **Meta Lens** from the Start menu or desktop shortcut. No Node.js, terminal, account, or API key is needed.
 
-2. Download and extract this repository, or clone it.
+A **portable.exe** is also available: run it without installing. Both editions save teams and public-data caches in your Windows user profile, so replacing the executable preserves your workspace. The portable edition is installation-free, not a USB-contained profile. The release is unsigned; Windows may display an unknown-publisher/SmartScreen prompt.
 
-3. Double-click **Start Meta Lens.cmd**. On first launch it installs dependencies and builds the app, then opens your browser. Keep its console running while you use it.
+The first launch downloads the public data. Later launches show cached results while checking for updates. Closing the window exits the app and its local server. Source links open in your regular browser; exports use a Save dialog.
+
+## Automatic data updates
+
+- Checks on every launch and every **6 hours while the app is open**; checks due during sleep run on resume. Failed refreshes retry after **30 minutes**.
+- Official Champions news supplies regulation names and start/end timestamps. A future announcement is not selected before its start time. The app discovers matching VGCPastes tabs rather than requiring new hardcoded tab IDs.
+- **Follow the latest active regulation automatically** is enabled by default. A rollover selects all indexed tournaments in that regulation. **Include all events** automatically incorporates newly published events and updated standings.
+- In **Data & sources**, choose a regulation to pin it or untick events for a custom sample. Save with **Refresh selected sources**. Custom selections survive automatic refreshes. The source panel shows the last refresh, next check, and stale-data warnings.
+- Cached data remains usable if a source is offline. Your last complete dataset is retained if a refresh fails. Data is stored locally; private teams are never sent to the data providers.
+
+Checks run while the app is open, not as a Windows background service. Discovery depends on the public sources retaining readable formats. Unknown Pokémon or mechanics require an app/engine update and are reported rather than silently assigned invented calculations. **Help → Releases & updates** opens new app downloads; executable updates are not installed automatically.
+
+## Run from source
+
+Install Node.js 22.12 or newer, download/clone this repository, then double-click **Start Meta Lens.cmd**. This development launcher installs dependencies, builds the app, and opens a browser with a local console server.
 
 Alternatively, on Windows, macOS, or Linux:
 
@@ -36,7 +50,7 @@ Open **http://127.0.0.1:4783**. No account, API key, database installation, or p
 
 4. **Spread explorer:** choose a move and desired KO/survival chance. The app automatically scans Attack/Sp. Atk for KOs, or all 1,089 HP + Defense/Sp. Def combinations for survival (including Body Press and Psyshock exceptions). Preview the full legal spread before applying it. Other stats stay unchanged if possible; otherwise they are reduced proportionally to remain within 66 points. This tests the selected nature and scenario, not every possible build.
 
-5. **Data & sources:** default to the latest supported metagame (M-C), all indexed events dated within it, and all published teams. You can choose a historical metagame, a custom event sample, top 20/40/80/all Pokémon, top 8/16/all reported spreads and 24/100/all published teams. The default data refresh loads 40 threats; the matrix opens with a fast top-20 view of the loaded data. Refresh progress, source dates, missing sheets and parsing warnings are visible.
+5. **Data & sources:** default to the latest active regulation discovered from official news, all indexed events dated within it, and all published teams. You can choose a historical metagame, a custom event sample, top 20/40/80/all Pokémon, top 8/16/all reported spreads and 24/100/all published teams. The default data refresh loads 40 threats; the matrix opens with a fast top-20 view of the loaded data. Refresh progress, source dates, missing sheets and parsing warnings are visible.
 
 Use **Team vs team** for a matrix against 1–6 exact opponent sets. Import text/a Poképaste, or click **Use as opponent** on a published team. Click opponent roster entries to edit them; opponent edits in the expanded matchup also update the matrix. Both teams persist independently in browser storage. Missing spreads remain labeled as unknown and use 0 SP until edited. This compares individual matchups, not a simulated doubles battle.
 
@@ -68,7 +82,7 @@ The default estimated set combines the most-used item, nature, ability and four 
 
 Tournament ingestion normalizes Pokedata bracketed gender, regional and form names before matching calculator/ladder names. Battle-relevant genders and regional forms remain separate; unknown labels produce a source warning rather than disappearing silently.
 
-M-B/M-C selects the published-team tab and default event era. The in-game capture always reflects the current season, so historical M-B analysis carries an explicit mismatch warning. Verify that your selected events share the intended regulation. The app is not a complete team-legality validator.
+The selected regulation determines the published-team tab and event era. The in-game capture always reflects the current season, so historical analysis carries an explicit mismatch warning. Verify that your selected events share the intended regulation. The app is not a complete team-legality validator.
 
 ## Calculation engine and scope
 
@@ -90,10 +104,16 @@ npm run build    # production frontend
 
 npm run check    # tests + production build
 
+npm run desktop  # launch the desktop app from source
+
+npm run dist:win # build Windows x64 installer and portable app in release/
+
+pwsh -File scripts/smoke-desktop.ps1 # test packaged launch and calculation worker
+
 ```
 
 Tests cover parsing, SP legality, independent Smogon comparisons for unchanged mechanics, Mega aliases and abilities, Intimidate, weather, screens, immunity, roll mass, multi-hit behavior, Focus Sash, budget sweeps, source denominators and source separation. Browser interaction QA is documented in [validation](docs/VALIDATION.md). Passing tests do not establish correctness for every possible Pokémon interaction.
 
-Architecture: React/Vite frontend → local Express API → cancellable background analysis worker with a bounded in-memory result cache, source adapters and the NCP engine in a VM context. `.cache/` contains downloaded public data and the last complete normalized dataset. It is excluded from Git; your team stays in the browser. Fetches use timeouts, bounded concurrency, a 24-hour response cache, a 30-day immutable paste cache, and stale-cache fallback. No private team is uploaded when requesting public data.
+Architecture: React/Vite frontend → local Express API → cancellable background analysis worker with a bounded in-memory result cache, source adapters and the NCP engine in a VM context. The desktop shell uses a sandboxed renderer and a stable local app origin, backed by a loopback-only server on an available port. Its profile stores your team and downloaded data; **Help → Open data folder** locates the cache. The source/browser edition uses `.cache/` (excluded from Git) and browser local storage. Refreshes check mutable sources online, with timeouts, bounded concurrency, a 30-day immutable paste cache, and stale-cache fallback. Dataset replacements are atomic. The Windows CI workflow builds both artifacts and tests the packaged calculator worker in an isolated profile. No private team is uploaded when requesting public data.
 
 See [research](docs/RESEARCH.md) for existing tools and the reason for building this app. Pokémon names and trademarks belong to their respective owners. This project is unaffiliated with The Pokémon Company, Nintendo, Game Freak or the data providers.

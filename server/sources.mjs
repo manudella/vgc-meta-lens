@@ -5,6 +5,8 @@ import { load } from "cheerio";
 import { parse } from "csv-parse/sync";
 import { STATS, baseName, speciesName, validateSet } from "./engine.mjs";
 import { parsePaste } from "./paste.mjs";
+import { cacheDir, saveJson } from "./storage.mjs";
+import { SHEET, discoverRegulations } from "./regulations.mjs";
 import {
   METAGAMES,
   LATEST_METAGAME,
@@ -13,8 +15,6 @@ import {
   metagameEvents,
 } from "../shared/metagames.mjs";
 
-const cacheDir = new URL("../.cache/", import.meta.url);
-const SHEET = "1axlwmzPA49rYkqXh7zHvAtSP-TKbM0ijGYBPRflLSWw";
 export const sourceLinks = {
   ladder: "https://www.munchstats.com/champions/doubles/Rillaboom",
   events: "https://pokedata.ovh/standingsVGC",
@@ -67,8 +67,14 @@ export async function pasteFromUrl(url) {
   });
   return raw.text;
 }
-export async function getEvents() {
-  const raw = await cachedFetch(sourceLinks.events);
+export async function getEvents(regulations = METAGAMES, health = []) {
+  const raw = await cachedFetch(sourceLinks.events, { force: true });
+  health.push({
+    name: "Tournament discovery",
+    url: sourceLinks.events,
+    fetchedAt: raw.at,
+    stale: raw.stale,
+  });
   const $ = load(raw.text);
   return $("button")
     .toArray()
@@ -80,7 +86,7 @@ export async function getEvents() {
     .map((e) => ({
       ...e,
       date: eventDate(e.name),
-      metagame: eventMetagame(eventDate(e.name)),
+      metagame: eventMetagame(eventDate(e.name), regulations),
     }));
 }
 export function tournamentUsage(events) {
@@ -152,15 +158,22 @@ export function ladderSets(data, spreadLimit = 8) {
       }
     });
 }
-export async function getPublished(format = "M-C") {
-  const gid = METAGAMES[format]?.gid;
-  if (!gid) throw new Error("Unsupported metagame.");
-  const result = await cachedFetch(
-    `https://docs.google.com/spreadsheets/d/${SHEET}/export?format=csv&gid=${gid}`,
-  );
+export async function getPublished(
+  format = LATEST_METAGAME,
+  regulations = METAGAMES,
+  force = false,
+) {
+  const { gid, sheet } = regulations[format] || {};
+  if (!gid && !sheet)
+    throw new Error(`Published-team tab for ${format} is not available yet.`);
+  // Named-tab CSV avoids hardcoding a new Google gid for every regulation.
+  const url = gid
+    ? `https://docs.google.com/spreadsheets/d/${SHEET}/export?format=csv&gid=${gid}`
+    : `https://docs.google.com/spreadsheets/d/${SHEET}/gviz/tq?tqx=out:csv&headers=0&sheet=${encodeURIComponent(sheet)}`;
+  const result = await cachedFetch(url, { force });
   return {
     teams: publishedTeamsFromCsv(result.text),
-    source: `${sourceLinks.teams}?gid=${gid}`,
+    source: gid ? `${sourceLinks.teams}?gid=${gid}` : url,
     stale: result.stale,
     at: result.at,
   };
@@ -173,7 +186,7 @@ export function publishedTeamsFromCsv(text) {
     ix = (label) => h.indexOf(label);
   const teams = rows
     .slice(header + 1)
-    .filter((row) => /^M[BC]\d+$/.test(row[0]))
+    .filter((row) => /^M[A-Z]+\d+$/.test(row[0]))
     .map((row) => ({
       id: row[0],
       title: row[1],
@@ -211,6 +224,10 @@ export async function restore() {
     state.data = JSON.parse(
       await fs.readFile(new URL("dataset.json", cacheDir), "utf8"),
     );
+    if (state.data.config && state.data.config.followLatest === undefined)
+      state.data.config.followLatest = state.data.format === LATEST_METAGAME;
+    if (state.data.regulations)
+      Object.assign(knownRegulations, state.data.regulations);
     // Upgrade cached datasets without refetching every ladder set or Poképaste.
     if (state.data.published?.some((t) => !Array.isArray(t.members))) {
       const indexed = new Map(
@@ -230,15 +247,18 @@ export async function restore() {
     }
   } catch {}
 }
+let knownRegulations = structuredClone(METAGAMES);
 export async function refresh({
   format = LATEST_METAGAME,
+  followLatest = true,
   eventIds,
   limit = 40,
   spreadLimit = 8,
   publishedLimit = 1000,
 } = {}) {
   if (state.running) return;
-  if (!["M-B", "M-C"].includes(format)) throw new Error("Choose M-B or M-C.");
+  if (!/^M-[A-Z]+$/.test(format))
+    throw new Error("Choose a valid Champions regulation.");
   if (![20, 40, 80, 1000].includes(Number(limit)))
     throw new Error("Invalid coverage limit.");
   if (
@@ -260,11 +280,29 @@ export async function refresh({
   const warnings = [],
     health = [];
   try {
+    const discovery = await discoverRegulations(cachedFetch, knownRegulations);
+    knownRegulations = discovery.regulations;
+    warnings.push(...discovery.warnings);
+    health.push(...discovery.health);
+    if (followLatest && discovery.latest && format !== discovery.latest) {
+      format = discovery.latest;
+      eventIds = null;
+    }
+    if (!knownRegulations[format])
+      throw new Error("This regulation has no confirmed dates yet.");
     let events = [];
     try {
-      events = await getEvents();
+      events = await getEvents(knownRegulations, health);
+      if (!events.length)
+        throw new Error(
+          "No tournament entries found; source layout may have changed.",
+        );
     } catch (e) {
       warnings.push(`Event discovery unavailable: ${e.message}`);
+      events = (state.data?.events || []).map((e) => ({
+        ...e,
+        metagame: eventMetagame(e.date || eventDate(e.name), knownRegulations),
+      }));
     }
     const defaultIds = metagameEvents(events, format).map((e) => e.id);
     const selected = eventIds || defaultIds;
@@ -272,7 +310,7 @@ export async function refresh({
     for (const id of selected) {
       try {
         const url = `https://pokedata.ovh/standingsVGC/${id}/masters/${id}_Masters.json`;
-        const raw = await cachedFetch(url);
+        const raw = await cachedFetch(url, { force: true });
         const players = JSON.parse(raw.text);
         if (!Array.isArray(players))
           throw new Error("Unexpected tournament schema");
@@ -292,6 +330,10 @@ export async function refresh({
         warnings.push(e.message);
       }
     }
+    if (selected.length && !tournaments.length)
+      throw new Error(
+        "Selected tournaments are unavailable; preserving the previous dataset.",
+      );
     const usage = tournamentUsage(tournaments);
     for (const [name, count] of Object.entries(usage.unmapped))
       warnings.push(
@@ -299,6 +341,7 @@ export async function refresh({
       );
     const seedRaw = await cachedFetch(
       "https://www.munchstats.com/api/championsdoubles/0/Rillaboom",
+      { force: true },
     );
     const seed = JSON.parse(seedRaw.text);
     if (!seed.is_champions_game || !Array.isArray(seed.pokemon_names))
@@ -310,6 +353,12 @@ export async function refresh({
       fetchedAt: seedRaw.at,
       capturedAt: seed.champions_updated,
     });
+    for (const [name] of seed.pokemon_names) {
+      if (!speciesName(name))
+        warnings.push(
+          `${name}: not supported by the bundled calculator yet. An app update is required to model it.`,
+        );
+    }
     const names = seed.pokemon_names
       .map(([name, rank]) => ({
         name,
@@ -342,6 +391,7 @@ export async function refresh({
               ? seedRaw
               : await cachedFetch(
                   `https://www.munchstats.com/api/championsdoubles/0/${encodeURIComponent(target.name)}`,
+                  { force: true },
                 );
           const d = JSON.parse(raw.text),
             sets = ladderSets(d, Number(spreadLimit));
@@ -380,7 +430,7 @@ export async function refresh({
     state.progress = "Indexing published teams";
     let published = { teams: [] };
     try {
-      published = await getPublished(format);
+      published = await getPublished(format, knownRegulations, true);
       health.push({
         name: "VGCPastes",
         url: published.source,
@@ -389,6 +439,8 @@ export async function refresh({
       });
     } catch (e) {
       warnings.push(e.message);
+      if (state.data?.format === format)
+        published.teams = structuredClone(state.data.published || []);
     }
     let publishedLoaded = 0;
     for (const team of published.teams
@@ -422,16 +474,20 @@ export async function refresh({
         warnings.push(`${team.id}: ${e.message}`);
       }
     }
-    if (format === "M-B")
+    if (format !== discovery.latest)
       warnings.push(
-        "In-game ladder data reflects the current season, not historical M-B. Published teams and tournament selection use M-B.",
+        `In-game ladder data reflects the current season, not historical ${format}. Published teams and tournament selection use ${format}.`,
       );
     const data = {
-      version: 3,
+      version: 4,
       updatedAt: new Date().toISOString(),
       format,
+      regulations: knownRegulations,
+      latestFormat: discovery.latest,
+      discoveryCheckedAt: discovery.checkedAt,
       config: {
         format,
+        followLatest: Boolean(followLatest),
         eventIds: eventIds || null,
         limit: Number(limit),
         spreadLimit: Number(spreadLimit),
@@ -454,7 +510,7 @@ export async function refresh({
         "No usable sets returned; preserving the previous dataset.",
       );
     await fs.mkdir(cacheDir, { recursive: true });
-    await fs.writeFile(new URL("dataset.json", cacheDir), JSON.stringify(data));
+    await saveJson("dataset.json", data);
     state.data = data;
   } catch (e) {
     state.error = e.message;

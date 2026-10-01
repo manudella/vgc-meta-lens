@@ -70,6 +70,9 @@ const megaByItem = new Map(
 );
 export function speciesName(name) {
   name = sourceSpeciesName(name);
+  // Standard source names omit the default form suffix used by the NCP dex.
+  if (name === "Lycanroc") name = "Lycanroc-Midday";
+  if (name === "Gourgeist") name = "Gourgeist-Average";
   name = name
     .replace("Sinistcha-Masterpiece", "Sinistcha")
     .replace("Poltchageist-Artisan", "Poltchageist")

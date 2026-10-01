@@ -30,7 +30,11 @@ import { displaySpecies } from "../shared/sprites.mjs";
 import { SetPicker } from "./set-picker.jsx";
 import { MatrixCell } from "./matrix-cell.jsx";
 import { InvestmentExplorer } from "./investment-explorer.jsx";
-import { LATEST_METAGAME, metagameEvents } from "../shared/metagames.mjs";
+import {
+  LATEST_METAGAME,
+  METAGAMES,
+  metagameEvents,
+} from "../shared/metagames.mjs";
 import { displayedStage } from "../shared/battle-state.mjs";
 import { QuickSet, QuickField, PaceBadge, Stepper } from "./quick-controls.jsx";
 
@@ -1943,6 +1947,9 @@ function Matchup({
 }
 function Sources({ data, status, onRefresh }) {
   const [format, setFormat] = useState(data?.format || LATEST_METAGAME),
+    [followLatest, setFollowLatest] = useState(
+      data?.config?.followLatest !== false,
+    ),
     [limit, setLimit] = useState(data?.config?.limit || 40),
     [spreadLimit, setSpreadLimit] = useState(data?.config?.spreadLimit || 8),
     [publishedLimit, setPublishedLimit] = useState(
@@ -1956,6 +1963,7 @@ function Sources({ data, status, onRefresh }) {
       setFormat(data.format);
       setPublishedLimit(data.config.publishedLimit);
       setAutoEvents(!data.config.eventIds);
+      setFollowLatest(data.config.followLatest !== false);
     }
   }, [data]);
   return (
@@ -1991,13 +1999,39 @@ function Sources({ data, status, onRefresh }) {
       </div>
       <section className="source-config">
         <h2>Choose the metagame sample</h2>
+        <label className="auto-update-choice">
+          <input
+            type="checkbox"
+            checked={followLatest}
+            onChange={(e) => {
+              setFollowLatest(e.target.checked);
+              if (e.target.checked) {
+                const latest = data?.latestFormat || format;
+                setFormat(latest);
+                setAutoEvents(true);
+                setEvents(
+                  metagameEvents(data?.events || [], latest).map((e) => e.id),
+                );
+              }
+            }}
+          />
+          Follow the latest active regulation automatically
+        </label>
+        <p>
+          Checks on launch and every 6 hours while open. New events join the
+          sample automatically when all events are selected. Refresh below to
+          save your selection.
+        </p>
         <div className="source-controls">
           <FieldSelect
-            label="Metagame (M-C is latest)"
+            label={`Metagame${data?.latestFormat ? ` (${data.latestFormat} is active)` : ""}`}
             value={format}
-            values={["M-C", "M-B"]}
+            values={Object.keys(data?.regulations || METAGAMES)
+              .sort()
+              .reverse()}
             onChange={(value) => {
               setFormat(value);
+              setFollowLatest(false);
               setEvents(
                 metagameEvents(data?.events || [], value).map((e) => e.id),
               );
@@ -2044,6 +2078,7 @@ function Sources({ data, status, onRefresh }) {
             onClick={() =>
               onRefresh({
                 format,
+                followLatest,
                 eventIds: autoEvents ? null : events,
                 limit,
                 spreadLimit,
@@ -2061,6 +2096,21 @@ function Sources({ data, status, onRefresh }) {
           always uses its latest capture, including when viewing a historical
           metagame.
         </p>
+        <label className="auto-update-choice">
+          <input
+            type="checkbox"
+            checked={autoEvents}
+            onChange={(e) => {
+              setAutoEvents(e.target.checked);
+              if (e.target.checked)
+                setEvents(
+                  metagameEvents(data?.events || [], format).map((e) => e.id),
+                );
+            }}
+          />
+          Include all events in this regulation, including newly published
+          tournaments
+        </label>
         <div className="event-list">
           {metagameEvents(data?.events || [], format).map((e) => (
             <label key={e.id}>
@@ -2084,9 +2134,20 @@ function Sources({ data, status, onRefresh }) {
       <section className="source-config">
         <h2>Source health & freshness</h2>
         <p>
-          Responses cache for 24 hours; immutable Poképastes cache for 30 days.
-          Refresh rebuilds the analysis from available data. Failed sources
-          retain their cached values and are labeled stale.
+          Each refresh checks official regulation dates, tournament standings,
+          in-game data and published teams online. Poképastes cache for 30 days.
+          If a source is offline, cached data remains available and is labeled
+          stale.
+        </p>
+        <p role="status">
+          Last completed refresh:{" "}
+          {data?.updatedAt
+            ? new Date(data.updatedAt).toLocaleString()
+            : "Waiting for first download"}
+          .
+          {status.automaticUpdates?.nextCheckAt &&
+            ` Next automatic check: ${new Date(status.automaticUpdates.nextCheckAt).toLocaleString()}.`}
+          {status.running && " Updating in the background…"}
         </p>
         {data?.health.map((h, i) => (
           <div className="health-row" key={i}>

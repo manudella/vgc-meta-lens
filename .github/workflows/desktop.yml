@@ -1,0 +1,29 @@
+name: Windows desktop
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run dist:win
+      - name: Packaged app startup and calculation worker
+        shell: pwsh
+        run: ./scripts/smoke-desktop.ps1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Meta-Lens-Windows
+          path: release/*.exe
+          if-no-files-found: error

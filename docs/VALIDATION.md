@@ -45,3 +45,12 @@ Earlier records above describe prior versions; the initiative panel and manual f
 - Matrix backgrounds now encode only maximum damage (green/yellow/red); neither KO probability nor speed changes the background.
 - KO probabilities above 50% use a dark-red badge with white text. Split cells show the outgoing and incoming move names. Speed remains a separate text label.
 - All 45 tests and the production build pass after the display changes.
+
+
+## Version 1.0.0 desktop release (2026-10-01)
+
+- 52 offline tests cover previous calculator regressions plus automatic scheduling, retry/no-overlap behavior, new regulation discovery, exact activation boundaries, offline discovery fallback, future published-team IDs, cross-month event dates, and default-form species aliases.
+- Official live news discovery returns M-A, M-B and active M-C, with dated official source links and matching published-team tabs. Full refresh retains the existing all-species/all-spreads selection and reads all three M-C events (2,533 usable teams).
+- Windows x64 NSIS installer and portable executable bundle Electron, the local server, frontend and pinned calculator. No Node installation is required.
+- Packaged smoke test loads the app at its stable metalens://app origin, imports a set and calculates an exact-team matrix through the packaged worker. It uses an isolated profile and no external data. Desktop UI verification includes first-run download, populated matrix, move labels, sprites, dynamic regulation choices and automatic-update controls.
+- Software is unsigned. Data updates run while open; app/engine executable updates are manual. Public source schema changes and unsupported future mechanics remain explicit limitations.

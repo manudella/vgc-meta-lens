@@ -1,0 +1,32 @@
+appId: com.metalens.desktop
+productName: Meta Lens
+asar: false
+directories:
+  output: release
+files:
+  - dist/**/*
+  - desktop/**/*
+  - server/**/*
+  - shared/**/*
+  - vendor/**/*
+  - package.json
+  - LICENSE
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+    - target: portable
+      arch: [x64]
+  icon: desktop/icon.ico
+  signExecutable: false
+nsis:
+  artifactName: Meta-Lens-${version}-${arch}-setup.${ext}
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  deleteAppDataOnUninstall: false
+portable:
+  artifactName: Meta-Lens-${version}-${arch}-portable.${ext}
+  requestExecutionLevel: user

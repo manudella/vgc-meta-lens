@@ -1919,3 +1919,6 @@ input[type="checkbox"] {
 .is-busy .calc-cell {
   pointer-events: none;
 }
+
+.auto-update-choice { display: flex; align-items: center; gap: 10px; margin: 12px 0; font-size: 13px; }
+.auto-update-choice input { accent-color: #406a34; }

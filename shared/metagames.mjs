@@ -6,7 +6,7 @@ export const METAGAMES = {
 export const LATEST_METAGAME = "M-C";
 export function eventDate(name) {
   const m = name.match(
-    /-\s*([A-Za-z]+)\s+(\d{1,2})(?:\s*[-–]\s*\d{1,2})?,?\s+(20\d{2})/,
+    /[-–]\s*([A-Za-z]+)\s+(\d{1,2})(?:\s*[-–]\s*(?:[A-Za-z]+\s+)?\d{1,2})?,?\s+(20\d{2})/,
   );
   if (!m) return null;
   const time = Date.parse(`${m[1]} ${m[2]}, ${m[3]} 12:00:00 UTC`);
@@ -14,9 +14,9 @@ export function eventDate(name) {
     ? new Date(time).toISOString().slice(0, 10)
     : null;
 }
-export function eventMetagame(date) {
+export function eventMetagame(date, regulations = METAGAMES) {
   return (
-    Object.entries(METAGAMES).find(
+    Object.entries(regulations).find(
       ([, rule]) => date && date >= rule.start && date < rule.end,
     )?.[0] || null
   );
