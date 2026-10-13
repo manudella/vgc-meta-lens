@@ -45,8 +45,8 @@ export function MatrixCell({ cell: c, mode, own, foe, expanded, onClick }) {
           : `calc-cell damage-tone ${damageTone(damage)}`
       }
       onClick={onClick}
-      aria-expanded={expanded}
-      aria-label={`${own} vs ${foe}: dealt ${range(c.out)}, received ${range(c.incoming)}. Open matchup.`}
+      aria-pressed={expanded}
+      aria-label={`${own} vs ${foe}: dealt ${range(c.out)}, received ${range(c.incoming)}. Open matchup tab.`}
       title={`${c.out?.move || "No damage"}: ${pct(c.ko)} OHKO; ${c.incoming?.move || "No damage"}: ${pct(receivedKo)} incoming OHKO. Bars: minimum to maximum damage, capped at 100% HP. Color: maximum damage. Speed is labeled separately; priority can change order.`}
     >
       {both ? (

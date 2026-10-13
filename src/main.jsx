@@ -22,12 +22,19 @@ import {
   Activity,
   Info,
   Settings2,
+  Maximize2,
+  Minimize2,
 } from "lucide-react";
 import "./style.css";
 import "./matrix.css";
 import { PokemonSprite } from "./pokemon-sprite.jsx";
 import { displaySpecies } from "../shared/sprites.mjs";
 import { SetPicker } from "./set-picker.jsx";
+import {
+  opponentDanger,
+  compareOpponentDanger,
+  isCoverageGap,
+} from "../shared/matrix-filters.mjs";
 import { MatrixCell } from "./matrix-cell.jsx";
 import { InvestmentExplorer } from "./investment-explorer.jsx";
 import {
@@ -149,7 +156,59 @@ function App() {
     [quickCalc, setQuickCalc] = useState(null),
     [limit, setLimit] = useState(20),
     [gapsOnly, setGapsOnly] = useState(false),
+    [opponentKos, setOpponentKos] = useState(false),
+    [fullMatrix, setFullMatrix] = useState(false),
+    [matchupTabs, setMatchupTabs] = useState([]),
+    [activeMatchup, setActiveMatchup] = useState(null),
     [sort, setSort] = useState("usage");
+  useEffect(() => {
+    if (!fullMatrix) return;
+    const old = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const escape = (e) => {
+      if (e.key === "Escape") setFullMatrix(false);
+    };
+    window.addEventListener("keydown", escape);
+    return () => {
+      document.body.style.overflow = old;
+      window.removeEventListener("keydown", escape);
+    };
+  }, [fullMatrix]);
+  const openMatchup = (row, index) => {
+    if (!team[index] || busy) return;
+    const id = JSON.stringify([
+      tab,
+      row.id || row.species,
+      index,
+      team[index],
+      options,
+      row.exact ? row.sets[0] : null,
+    ]);
+    setMatchupTabs((tabs) =>
+      tabs.some((t) => t.id === id)
+        ? tabs
+        : [
+            ...tabs,
+            {
+              id,
+              index,
+              origin: tab,
+              team: structuredClone(team[index]),
+              threat: structuredClone(row),
+              options: structuredClone(options),
+              speedRange: row.cells[index]?.speedRange,
+            },
+          ],
+    );
+    setSelected(row.id || row.species);
+    setMember(index);
+    setActiveMatchup(id);
+    setFullMatrix(false);
+  };
+  const patchMatchup = (id, patch) =>
+    setMatchupTabs((tabs) =>
+      tabs.map((t) => (t.id === id ? { ...t, ...patch } : t)),
+    );
   const isVersus = tab === "versus";
   const isMatrix = tab === "matchups" || isVersus;
   useEffect(() => {
@@ -256,21 +315,18 @@ function App() {
         .filter((r) =>
           r.species.toLowerCase().includes(query.trim().toLowerCase()),
         )
-        .filter(
-          (r) =>
-            !gapsOnly ||
-            !r.cells.some(
-              (c) => (mode === "incoming" ? c.survive : c.ko) >= 0.95,
-            ),
-        )
+        .filter((r) => !gapsOnly || isCoverageGap(r, mode))
+        .filter((r) => !opponentKos || opponentDanger(r).kos > 0)
         .sort((a, b) =>
-          sort === "risk"
-            ? Math.max(...a.cells.map((c) => c.survive ?? 0)) -
-              Math.max(...b.cells.map((c) => c.survive ?? 0))
-            : (b.usage || 0) - (a.usage || 0) ||
-              (a.rank || 999) - (b.rank || 999),
+          opponentKos
+            ? compareOpponentDanger(a, b)
+            : sort === "risk"
+              ? Math.max(...a.cells.map((c) => c.survive ?? 0)) -
+                Math.max(...b.cells.map((c) => c.survive ?? 0))
+              : (b.usage || 0) - (a.usage || 0) ||
+                (a.rank || 999) - (b.rank || 999),
         ),
-    [rows, query, sort, gapsOnly, mode],
+    [rows, query, sort, gapsOnly, mode, opponentKos],
   );
   const extraConditions = [
     options.singleTarget,
@@ -300,6 +356,9 @@ function App() {
     setGapsOnly(false);
   };
   const navigate = (next) => {
+    setActiveMatchup(null);
+    setFullMatrix(false);
+    setOpponentKos(false);
     setTab(next);
     setSelected(null);
     setQuery("");
@@ -459,8 +518,92 @@ function App() {
               </span>
             </div>
           )}
+          {isMatrix && matchupTabs.length > 0 && (
+            <div
+              className="matchup-tabs"
+              role="tablist"
+              aria-label="Open matchups"
+            >
+              <button
+                role="tab"
+                aria-selected={!activeMatchup}
+                onClick={() => setActiveMatchup(null)}
+              >
+                Matrix
+              </button>
+              {matchupTabs.map((t) => (
+                <div className="matchup-tab" key={t.id}>
+                  <button
+                    role="tab"
+                    aria-selected={activeMatchup === t.id}
+                    onClick={() => setActiveMatchup(t.id)}
+                  >
+                    {t.team.species} vs {t.threat.species}
+                  </button>
+                  <button
+                    aria-label={`Close ${t.team.species} vs ${t.threat.species}`}
+                    onClick={() => {
+                      setMatchupTabs((tabs) =>
+                        tabs.filter((x) => x.id !== t.id),
+                      );
+                      if (activeMatchup === t.id) setActiveMatchup(null);
+                    }}
+                  >
+                    <X size={13} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          {matchupTabs.map((t) => (
+            <section
+              className="matchup-panel"
+              key={t.id}
+              hidden={!isMatrix || activeMatchup !== t.id}
+            >
+              <button
+                className="text-button"
+                onClick={() => setActiveMatchup(null)}
+              >
+                ← Back to matrix
+              </button>
+              <p className="muted">
+                This tab keeps its own opponent set and battle conditions.
+                Applying your set also updates the matching team slot.
+              </p>
+              <Matchup
+                team={t.team}
+                threat={t.threat}
+                speedRange={t.speedRange}
+                options={t.options}
+                onOptions={(options) => patchMatchup(t.id, { options })}
+                onOpponentChange={
+                  t.origin === "versus"
+                    ? (p) =>
+                        setOpponentTeam((current) =>
+                          current.map((v, i) =>
+                            i === t.threat.opponentIndex &&
+                            v.species === t.threat.species
+                              ? p
+                              : v,
+                          ),
+                        )
+                    : undefined
+                }
+                cat={cat}
+                onApply={(p) => {
+                  patchMatchup(t.id, { team: p });
+                  setTeam((current) =>
+                    current.map((v, i) =>
+                      i === t.index && v.species === t.team.species ? p : v,
+                    ),
+                  );
+                }}
+              />
+            </section>
+          ))}
           {isMatrix && (
-            <>
+            <div className="matrix-workspace" hidden={!!activeMatchup}>
               <section className="team-section">
                 <div className="section-title">
                   <div>
@@ -619,6 +762,7 @@ function App() {
               <section
                 className="analysis-section"
                 id="matchup-matrix"
+                data-full-window={fullMatrix || undefined}
                 aria-label={
                   isVersus
                     ? "Team versus team matrix"
@@ -790,9 +934,43 @@ function App() {
                     <button
                       className={gapsOnly ? "gap-toggle active" : "gap-toggle"}
                       aria-pressed={gapsOnly}
-                      onClick={() => setGapsOnly(!gapsOnly)}
+                      title={
+                        mode === "incoming"
+                          ? "Opponents against which no teammate has at least a 95% survival chance against their selected attack."
+                          : "Opponents against which no teammate has at least a 95% OHKO chance. Both mode uses this offensive test."
+                      }
+                      onClick={() => {
+                        setGapsOnly(!gapsOnly);
+                        setOpponentKos(false);
+                      }}
                     >
                       {gapsOnly ? "Show all rows" : "Show coverage gaps"}
+                    </button>
+                    <button
+                      className={
+                        opponentKos ? "gap-toggle active" : "gap-toggle"
+                      }
+                      aria-pressed={opponentKos}
+                      title="Opponents with >50% KO chance against at least one teammate; ranked by KO targets, move-first probability, then speed."
+                      onClick={() => {
+                        setOpponentKos(!opponentKos);
+                        setGapsOnly(false);
+                        if (!opponentKos) setLimit(0);
+                      }}
+                    >
+                      Opponent KOs
+                    </button>
+                    <button
+                      className="gap-toggle"
+                      aria-pressed={fullMatrix}
+                      onClick={() => setFullMatrix(!fullMatrix)}
+                    >
+                      {fullMatrix ? (
+                        <Minimize2 size={14} />
+                      ) : (
+                        <Maximize2 size={14} />
+                      )}{" "}
+                      {fullMatrix ? "Exit full window" : "Full window"}
                     </button>
                     <label className="search">
                       <Search size={15} />
@@ -829,22 +1007,46 @@ function App() {
                     )}
                     <select
                       aria-label="Sort threats"
-                      value={sort}
+                      disabled={opponentKos}
+                      value={opponentKos ? "opponent-kos" : sort}
                       onChange={(e) => setSort(e.target.value)}
                     >
                       <option value="usage">
                         {isVersus ? "Opponent team order" : "Tournament usage"}
                       </option>
                       <option value="risk">Team survival gaps</option>
+                      {opponentKos && (
+                        <option value="opponent-kos">
+                          KO targets → move order → speed
+                        </option>
+                      )}
                     </select>
                   </div>
                 </div>
+                {gapsOnly && (
+                  <p className="filter-help">
+                    {mode === "incoming"
+                      ? "Coverage gaps: no teammate has a ≥95% chance to survive this opponent’s selected attack."
+                      : "Coverage gaps: no teammate has a ≥95% chance to OHKO this opponent. Both mode uses this offensive test."}{" "}
+                    These are individual matchups, not a predicted battle
+                    result.
+                  </p>
+                )}
+                {opponentKos && (
+                  <p className="filter-help">
+                    Opponent KOs: conditional on the move hitting, at least one
+                    teammate faces a KO chance above 50%. Ordered by number of
+                    KO targets, then opponent move-first probability against
+                    those targets (including priority and Trick Room), then
+                    maximum modeled speed. This is not a predicted sweep.
+                  </p>
+                )}
                 <div className="table-explainer">
                   <Info size={14} />
                   Bars show damage: solid to minimum, striped to maximum (100%
                   HP scale). Color uses maximum damage; ✹ marks KO chance above
                   50%. Speed is labeled separately.{" "}
-                  <strong>Click any cell to inspect.</strong>
+                  <strong>Click a cell to open a matchup tab.</strong>
                 </div>
                 <div className="matrix-context">
                   <span>
@@ -916,13 +1118,7 @@ function App() {
                             <td>
                               <button
                                 className="threat-label"
-                                onClick={() =>
-                                  setSelected(
-                                    selected === (r.id || r.species)
-                                      ? null
-                                      : r.id || r.species,
-                                  )
-                                }
+                                onClick={() => openMatchup(r, member)}
                               >
                                 <span className="rank">
                                   {String(ri + 1).padStart(2, "0")}
@@ -941,6 +1137,17 @@ function App() {
                                 />
                                 <span>
                                   <strong>{r.species}</strong>
+                                  {opponentKos && (
+                                    <small className="danger-summary">
+                                      KOs {opponentDanger(r).kos}/{team.length}{" "}
+                                      · first{" "}
+                                      {Math.round(
+                                        (100 * opponentDanger(r).first) /
+                                          opponentDanger(r).kos,
+                                      )}
+                                      % avg
+                                    </small>
+                                  )}
                                   <small>
                                     {r.exact ? (
                                       `${r.sets[0].item || "No item"} · ${r.sets[0].nature}`
@@ -980,53 +1187,12 @@ function App() {
                                       selected === (r.id || r.species) &&
                                       member === i
                                     }
-                                    onClick={() => {
-                                      setSelected(r.id || r.species);
-                                      setMember(i);
-                                    }}
+                                    onClick={() => openMatchup(r, i)}
                                   />
                                 </td>
                               );
                             })}
                           </tr>
-                          {selected === (r.id || r.species) && (
-                            <tr className="detail-row">
-                              <td colSpan={team.length + 1}>
-                                <button
-                                  className="text-button close-matchup"
-                                  onClick={() => setSelected(null)}
-                                >
-                                  <X size={15} /> Close matchup · back to matrix
-                                </button>
-                                <Matchup
-                                  key={`${r.id || r.species}-${member}`}
-                                  team={team[member]}
-                                  threat={r}
-                                  onOpponentChange={
-                                    isVersus
-                                      ? (p) =>
-                                          setOpponentTeam((t) =>
-                                            t.map((v, i) =>
-                                              i === r.opponentIndex ? p : v,
-                                            ),
-                                          )
-                                      : undefined
-                                  }
-                                  speedRange={r.cells[member]?.speedRange}
-                                  options={options}
-                                  onOptions={setOptions}
-                                  cat={cat}
-                                  onApply={(p) =>
-                                    setTeam(
-                                      team.map((x, i) =>
-                                        i === member ? p : x,
-                                      ),
-                                    )
-                                  }
-                                />
-                              </td>
-                            </tr>
-                          )}
                         </React.Fragment>
                       ))}
                     </tbody>
@@ -1079,21 +1245,7 @@ function App() {
                   </span>
                 </div>
               </section>
-              {!isVersus && (
-                <div className="method-note">
-                  <Shield size={19} />
-                  <p>
-                    <strong>Know what the numbers mean.</strong> The matrix
-                    models the most-used item, nature, ability and four moves
-                    with the selected reported spread sample. These are separate
-                    marginal distributions, not observed full sets. Percentages
-                    are normalized within the displayed spread sample; the
-                    detail view shows its coverage. All field conditions apply
-                    to both the table and individual calculations.
-                  </p>
-                </div>
-              )}
-            </>
+            </div>
           )}
           {tab === "sources" && (
             <Sources data={data} status={status} onRefresh={refresh} />
