@@ -6,7 +6,7 @@ This is a standalone project. It does not depend on, integrate with, or modify A
 
 ## Install the Windows app
 
-Download **Meta-Lens-1.0.0-x64-setup.exe** from the [latest release](https://github.com/manudella/vgc-meta-lens/releases/latest). Run the installer, then open **Meta Lens** from the Start menu or desktop shortcut. No Node.js, terminal, account, or API key is needed.
+Download **Meta-Lens-1.1.0-x64-setup.exe** from the [latest release](https://github.com/manudella/vgc-meta-lens/releases/latest). Run the installer, then open **Meta Lens** from the Start menu or desktop shortcut. No Node.js, terminal, account, or API key is needed.
 
 A **portable.exe** is also available: run it without installing. Both editions save teams and public-data caches in your Windows user profile, so replacing the executable preserves your workspace. The portable edition is installation-free, not a USB-contained profile. The release is unsigned; Windows may display an unknown-publisher/SmartScreen prompt.
 

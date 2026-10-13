@@ -203,7 +203,6 @@ function App() {
     setSelected(row.id || row.species);
     setMember(index);
     setActiveMatchup(id);
-    setFullMatrix(false);
   };
   const patchMatchup = (id, patch) =>
     setMatchupTabs((tabs) =>
@@ -460,7 +459,7 @@ function App() {
             POKÉMON CHAMPIONS <span>{data?.format || LATEST_METAGAME}</span>
           </span>
         </header>
-        <div className={"page " + (isMatrix ? "matrix-page" : "")}>
+        <div className={"page " + (isMatrix ? "matrix-page" : "")} data-matrix-window={isMatrix && fullMatrix || undefined}>
           <div className="page-heading">
             <div>
               <div className="eyebrow">
@@ -518,7 +517,7 @@ function App() {
               </span>
             </div>
           )}
-          {isMatrix && matchupTabs.length > 0 && (
+          {isMatrix && (matchupTabs.length > 0 || fullMatrix) && (
             <div
               className="matchup-tabs"
               role="tablist"
@@ -531,6 +530,7 @@ function App() {
               >
                 Matrix
               </button>
+              {fullMatrix && <button className="window-exit" onClick={() => setFullMatrix(false)}>Exit full window</button>}
               {matchupTabs.map((t) => (
                 <div className="matchup-tab" key={t.id}>
                   <button

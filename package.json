@@ -1,6 +1,6 @@
 {
   "name": "vgc-meta-lens",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "description": "Champions team-to-metagame damage analysis with traceable sources",
